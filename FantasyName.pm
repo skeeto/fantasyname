@@ -37,7 +37,7 @@ our %templates = (
     "v" => [qw(a e i o u y)],
     "V" => [qw(a e i o u y ae ai au ay ea ee ei eu ey ia ie oe oi oo
                ou ui)],
-    "c" => [qw("b c d f g h j k l m n p q r s t v w x y z")],
+    "c" => [qw(b c d f g h j k l m n p q r s t v w x y z)],
     "B" => [qw(b bl br c ch chr cl cr d dr f g h j k l ll m n p ph qu
                r rh s sch sh sl sm sn st str sw t th thr tr v w wh y z
                zh)],
