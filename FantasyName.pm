@@ -102,7 +102,7 @@ sub randsel {
 
 # Generate a name given the template
 sub generate {
-    return $parser->name($_[0]);
+    return $parser->name(shift);
 }
 
 1;
