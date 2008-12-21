@@ -80,9 +80,11 @@ lexp : lset lexp { $item[1] . $item[2] } | lset
 texp : tset texp { $item[1] . $item[2] } | tset
 
 llist : lexp "|" llist { push(@{$item[3]}, $item[1]); $item[3] } | 
+        lexp "|" { [$item[1], ""] } |
         lexp { [$item[1]] }
 
 tlist : texp "|" tlist { push(@{$item[3]}, $item[1]); $item[3] } | 
+        texp "|" { [$item[1], ""] } |
         texp { [$item[1]] }
 
 template : "<" tlist ">" { FantasyName::randsel($item[2]) } |
