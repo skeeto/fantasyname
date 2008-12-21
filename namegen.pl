@@ -52,7 +52,7 @@ EOF
 
 # Patterns
 my %patterns = (
-    "default" => "<s|B|Bv|v><V|s|(')|V><s|V|C>",
+    "default" => "<s|B|Bv|v><V|s|'|V><s|V|C>",
     "idiot"   => "<i|Cd>D<d|i>",
     );
 if ($print_patterns) {
