@@ -18,7 +18,7 @@ my $version	   = "1.0.0";
 
 # Parse arguments
 my $res = GetOptions(
-    "t|pattern=s"    => \$template,
+    "t|template=s"   => \$template,
     "n|num-names=i"  => \$num_names,
     "l|lowercase!"   => \$capitalize,
     "s|show"         => \$print_patterns,
