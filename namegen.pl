@@ -54,6 +54,7 @@ EOF
 my %patterns = (
     "default" => "<s|B|Bv|v><V|s|'|V><s|V|C>",
     "idiot"   => "<i|Cd>D<d|i>",
+    "short"   => "<V|B><V|vs|Vs>",
     );
 if ($print_patterns) {
     print "$_\t($patterns{$_})\n" for (keys %patterns);
