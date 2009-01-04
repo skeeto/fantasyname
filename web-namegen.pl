@@ -52,6 +52,10 @@ if (param()) {
 	push @list, gen($pattern) for (1..$count);
 	@list = grep {$_ ne -1} @list;
 	print ul(li(\@list));
+
+	my $patterns_log;
+	open $patterns_log, ">>patterns.log"
+	    and print $patterns_log $pattern, "\n";
     }
 }
 
