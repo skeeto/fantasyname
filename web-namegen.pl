@@ -40,6 +40,9 @@ if (param()) {
     
     if (!$test) {
 	print "Invalid pattern: ", escapeHTML($pattern), p;
+	my $patterns_log;
+	open $patterns_log, ">>invalid.log"
+	    and print $patterns_log $pattern, "\n";
     } elsif ($test eq -1) {
  	print
  	    "Generation timeout: please enter a simpler pattern.", p,
@@ -47,6 +50,9 @@ if (param()) {
  	    "it on your own machine. You can clone the name generator ",
 	    "project with git,", p,
  	    "<pre>git clone ", a({-href => $git_url}, $git_repo), "</pre>";
+	my $patterns_log;
+	open $patterns_log, ">>timeout.log"
+	    and print $patterns_log $pattern, "\n";
     } else {
 	my @list;
 	push @list, gen($pattern) for (1..$count);
