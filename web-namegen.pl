@@ -40,7 +40,7 @@ if (param()) {
     
     if (!$test) {
 	print "Invalid pattern: ", escapeHTML($pattern), p;
-    } elsif ($test == -1) {
+    } elsif ($test eq -1) {
  	print
  	    "Generation timeout: please enter a simpler pattern.", p,
  	    "If you want to generate this pattern, you can run ",
@@ -50,7 +50,7 @@ if (param()) {
     } else {
 	my @list;
 	push @list, gen($pattern) for (1..$count);
-	@list = grep {$_ != -1} @list;
+	@list = grep {$_ ne -1} @list;
 	print ul(li(\@list));
     }
 }
