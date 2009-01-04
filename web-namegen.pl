@@ -22,7 +22,7 @@ print header,
     h2('Fantasy Name Generator'),
     start_form(-method => 'GET', -action => (fileparse($0))[0]),
     "Pattern ", textfield(-name => 'pattern', -size => 60), p,
-    "Count: ", 
+    "Count: ",
     popup_menu(-name    => 'count',
 	       -values  => $counts,
                -default => $default_count), p,
@@ -35,10 +35,10 @@ if (param()) {
     my $pattern = param('pattern');
     my $count   = param('count') || $default_count;
     $count = min($count, max(@$counts));
-    
+
     # Test the pattern
     my $test = gen($pattern);
-    
+
     if (!$test) {
 	print "Invalid pattern: ", escapeHTML($pattern), p;
 	my $patterns_log;
