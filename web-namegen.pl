@@ -14,6 +14,7 @@ my $default_count = 10;
 my $timeout  = 1; # Seconds
 my $git_repo = 'http://git.nullprogram.com/fantasyname.git';
 my $git_url  = 'http://git.nullprogram.com/?p=fantasyname.git;a=summary';
+my $log_lenmax = 1000;
 
 # Print form
 print header,
@@ -41,8 +42,9 @@ if (param()) {
     if (!$test) {
 	print "Invalid pattern: ", escapeHTML($pattern), p;
 	my $patterns_log;
-	open $patterns_log, ">>invalid.log"
-	    and print $patterns_log $pattern, "\n";
+	length($pattern) < $log_lenmax and
+	    open $patterns_log, ">>invalid.log" and
+	    print $patterns_log $pattern, "\n";
     } elsif ($test eq -1) {
  	print
  	    "Generation timeout: please enter a simpler pattern.", p,
@@ -51,7 +53,8 @@ if (param()) {
 	    "project with git,", p,
  	    "<pre>git clone ", a({-href => $git_url}, $git_repo), "</pre>";
 	my $patterns_log;
-	open $patterns_log, ">>timeout.log"
+	length($pattern) < $log_lenmax and
+	    open $patterns_log, ">>timeout.log"
 	    and print $patterns_log $pattern, "\n";
     } else {
 	my @list;
