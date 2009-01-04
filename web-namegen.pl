@@ -39,7 +39,7 @@ if (param()) {
     my $test = gen($pattern);
     
     if (!$test) {
-	print "Invalid pattern.", p;
+	print "Invalid pattern: ", escapeHTML($pattern), p;
     } elsif ($test == -1) {
  	print
  	    "Generation timeout: please enter a simpler pattern.", p,
