@@ -20,6 +20,7 @@ my $log_lenmax = 1000;
 print header,
     start_html('Fantasy Name Generator'),
     h2('Fantasy Name Generator'),
+    a({-href => "quick-reference.html"}, "Quick Reference"), p
     start_form(-method => 'GET', -action => (fileparse($0))[0]),
     "Pattern ", textfield(-name => 'pattern', -size => 60), p,
     "Count: ",
