@@ -55,7 +55,14 @@ NameGen.symbols = {
  */
 NameGen.Random = function(generators) {
     if (!(this instanceof NameGen.Random)) {
-        return new NameGen.Random(generators);
+        switch (generators.length) {
+        case 0:
+            return '';
+        case 1:
+            return generators[0];
+        default:
+            return new NameGen.Random(generators);
+        }
     }
     this.sub = generators;
 }
@@ -74,7 +81,14 @@ NameGen.Random.prototype.toString = function() {
  */
 NameGen.Sequence = function(generators) {
     if (!(this instanceof NameGen.Sequence)) {
-        return new NameGen.Sequence(generators);
+        switch (generators.length) {
+        case 0:
+            return '';
+        case 1:
+            return generators[0];
+        default:
+            return new NameGen.Sequence(generators);
+        }
     }
     this.sub = generators;
 }
@@ -89,7 +103,7 @@ NameGen.Sequence.prototype.toString = function() {
 NameGen.generators = (function() {
     var generators = {};
     for (var symbol in NameGen.symbols) {
-        generators[symbol] = new NameGen.Random(NameGen.symbols[symbol]);
+        generators[symbol] = NameGen.Random(NameGen.symbols[symbol]);
     }
     return generators;
 }());
@@ -110,7 +124,7 @@ NameGen.compile = function(input) {
         stack.push({mode: mode, set: [[]]});
     }
     function pop() {
-        return new NameGen.Random(stack.pop().set.map(NameGen.Sequence));
+        return NameGen.Random(stack.pop().set.map(NameGen.Sequence));
     }
 
     push(SYMBOL);
