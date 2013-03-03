@@ -100,17 +100,6 @@ NameGen.Sequence.prototype.toString = function() {
 };
 
 /**
- * List of symbol NameGen.generators.
- */
-NameGen.generators = (function() {
-    var generators = {};
-    for (var symbol in NameGen.symbols) {
-        generators[symbol] = NameGen.Random(NameGen.symbols[symbol]);
-    }
-    return generators;
-}());
-
-/**
  * Return the last element of the Array.
  */
 Array.prototype.last = function() { return this[this.length - 1]; };
@@ -154,7 +143,8 @@ NameGen.compile = function(input) {
             if (stack.last().mode === LITERAL) {
                 stack.last().set.last().push(c);
             } else {
-                stack.last().set.last().push(NameGen.generators[c] || c);
+                var generators = NameGen.Random(NameGen.symbols[c] || [c]);
+                stack.last().set.last().push(generators);
             }
             break;
         }
