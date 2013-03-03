@@ -245,6 +245,10 @@ NameGen.compile = function(input, capitalize) {
         case ')':
             if (stack.length === 1) {
                 throw new Error('Unbalanced brackets.');
+            } else if (c === '>' && stack.last().mode === LITERAL) {
+                throw new Error('Unexpected ">" in input.');
+            } else if (c === ')' && stack.last().mode === SYMBOL) {
+                throw new Error('Unexpected ")" in input.');
             }
             var top = pop();
             stack.last().set.last().push(top);
