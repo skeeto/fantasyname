@@ -1,17 +1,30 @@
 var OUTPUT_COUNT = 120;
 
+var generator = null;
+
+function clear() {
+    $('#output').empty();
+}
+
+function append(n) {
+    var $output = $('#output');
+    for (var i = 0; i < n; i++) {
+        $output.append($('<li>' + generator + '</li>'));
+    }
+}
+
+function update(event) {
+    if (event) event.preventDefault();
+    clear();
+    try {
+        generator = NameGen.compile($('#spec').val());
+        $('#spec').removeClass('invalid');
+        append(OUTPUT_COUNT);
+    } catch (e) {
+        $('#spec').addClass('invalid');
+    }
+}
+
 $(document).ready(function() {
-    $('#input').on('submit input', function(event) {
-        event.preventDefault();
-        var $output = $('#output').empty();
-        try {
-            var generator = NameGen.compile($('#spec').val());
-            for (var i = 0; i < OUTPUT_COUNT; i++) {
-                $output.append($('<li>' + generator + '</li>'));
-            }
-            $('#spec').removeClass('invalid');
-        } catch (e) {
-            $('#spec').addClass('invalid');
-        }
-    });
+    $('#input').on('submit input', update);
 });
