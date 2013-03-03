@@ -38,4 +38,8 @@ function update(event) {
 $(document).ready(function() {
     $('#input').on('submit input change', update);
     $(window).on('scroll', fill);
+    $('#help').on('click', function(event) {
+        event.preventDefault();
+        $('#reference').slideToggle();
+    });
 });

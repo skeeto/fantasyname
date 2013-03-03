@@ -1,6 +1,6 @@
 body {
     font-family: sans-serif;
-    width: 800px;
+    width: 700px;
     text-align: center;
     margin: 0 auto;
     box-sizing: border-box;
@@ -58,4 +58,37 @@ h1 {
 
 input.invalid {
     box-shadow: 0px 0px 3px 3px pink;
+}
+
+#reference {
+    display: none;
+    text-align: left;
+    font-size: 11px;
+    list-style-type: none;
+    border: 1px solid gray;
+    border-radius: 10px;
+    padding: 10px;
+    width: 350px;
+    white-space: nowrap;
+    overflow: hidden;
+    background-color: white;
+    margin: 5px auto;
+}
+
+.symbol {
+    display: inline-block;
+    width: 20px;
+    font-weight: bold;
+    text-align: center;
+}
+
+#instructions {
+    width: 610px;
+    margin: -7px auto;
+    text-align: left;
+}
+
+#instructions a {
+    text-decoration: none;
+    font-size: 11px;
 }
