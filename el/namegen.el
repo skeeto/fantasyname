@@ -1,71 +1,46 @@
-;; namegen.el -- fantasy name generator
-;; Copyright (C) 2009 Christopher Wellons <mosquitopsu@gmail.com>
-;;
-;; Permission to use, copy, modify, and distribute this software for any
-;; purpose with or without fee is hereby granted, provided that the above
-;; copyright notice and this permission notice appear in all copies.
-;;
+;;; namegen.el --- fantasy name generator
+
+;; This is free and unencumbered software released into the public domain.
+
 ;;; Commentary:
-;;
+
 ;; This is mostly just some thoughts on an elisp name generator. Is it
 ;; based on the RinkWorks generator, though none of the syntax is
 ;; specifically used, only sexps. Symbols are replaced by a random
 ;; selection from its group,
-;;
-;; s  	syllable
-;; v 	single vowel
-;; V 	single vowel or vowel combination
-;; c 	single consonant
-;; B 	single consonant or consonant combination suitable for beginning a word
-;; C 	single consonant or consonant combination suitable anywhere in a word
-;; i 	an insult
-;; m 	a mushy name
-;; M 	a mushy name ending
-;; D 	consonant suited for a stupid person's name
-;; d 	syllable suited for a stupid person's name (always begins with a vowel)
-;;
+
+;; s  syllable
+;; v  single vowel
+;; V  single vowel or vowel combination
+;; c  single consonant
+;; B  single consonant or consonant combination suitable for beginning a word
+;; C  single consonant or consonant combination suitable anywhere in a word
+;; i  an insult
+;; m  a mushy name
+;; M  a mushy name ending
+;; D  consonant suited for a stupid person's name
+;; d  syllable suited for a stupid person's name (always begins with a vowel)
+
 ;; Strings are literal and passed in verbatim. If a list is presented,
 ;; select one of it's elements of random to be generated.
 ;;
 ;; So, to generate a name beginning with a syllable, then "ith" or a '
 ;; followed by a constant, and ending in a vowel sound,
-;;
+
 ;;    (s ("ith" ("'" C)) V)
-;;
+
 ;; In the RinkWorks syntax it would be,
-;;
+
 ;;    s(ith|<'C>)V
-;;
+
 ;; Just call it with namegen,
-;;
+
 ;;    (namegen '(s ("ith" ("'" C)) V))
-;;
+
 ;; And it generates a string with a name. Someday I might write a
 ;; parser to create a sexp from a pattern string.
-;;
+
 ;;; Code:
-
-(defun namegen (sexp)
-  "Generate a name from the given sexp generator."
-  (cond
-   ((null sexp) "")
-   ((stringp sexp) sexp)
-   ((symbolp sexp) (namegen-select sexp))
-   ((listp sexp)
-    (concat (if (listp (car sexp)) (namegen (randth (car sexp)))
-	      (namegen (car sexp)))
-	    (namegen (cdr sexp))))))
-
-(defun namegen-select (sym)
-  "Select a replacement for the given symbol."
-  (if (null (assoc sym namegen-subs))
-      (throw 'bad-symbol
-	     (concat "Invalid substitution symbol: " (format "%s" sym)))
-    (symbol-name (randth (cdr (assoc sym namegen-subs))))))
-
-(defun randth (lst)
-  "Select random element from the given list."
-  (nth (random (length lst)) lst))
 
 (defvar namegen-subs
   '((s ach ack ad age ald ale an ang ar ard as ash at ath augh
@@ -104,3 +79,29 @@
        ook ooz org ork orm oron ub uck ug ulf ult um umb ump umph
        un unb ung unk unph unt uzz))
   "Substitutions for the name generator.")
+
+(defun randth (lst)
+  "Select random element from the given list."
+  (nth (random (length lst)) lst))
+
+(defun namegen (sexp)
+  "Generate a name from the given sexp generator."
+  (cond
+   ((null sexp) "")
+   ((stringp sexp) sexp)
+   ((symbolp sexp) (namegen-select sexp))
+   ((listp sexp)
+    (concat (if (listp (car sexp)) (namegen (randth (car sexp)))
+              (namegen (car sexp)))
+            (namegen (cdr sexp))))))
+
+(defun namegen-select (sym)
+  "Select a replacement for the given symbol."
+  (if (null (assoc sym namegen-subs))
+      (throw 'bad-symbol
+             (concat "Invalid substitution symbol: " (format "%s" sym)))
+    (symbol-name (randth (cdr (assoc sym namegen-subs))))))
+
+(provide 'namegen)
+
+;;; namegen.el ends here
