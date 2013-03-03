@@ -190,6 +190,23 @@ NameGen.Sequence.prototype.toString = function() {
 };
 
 /**
+ * Decorate a generator by capitalizing its output.
+ * @param generator - The generator to be decorated.
+ * @returns A new generator.
+ * @constructor
+ */
+NameGen.Capitalizer = function(generator) {
+    if (!(this instanceof NameGen.Capitalizer)) {
+        return new NameGen.Capitalizer(generator);
+    }
+    /** @method */
+    this.toString = function() {
+        return NameGen._capitalize(generator.toString());
+    };
+    return this;
+};
+
+/**
  * @returns Last element of the array.
  * @method
  */
@@ -200,9 +217,10 @@ Array.prototype.last = function() {
 /**
  * Compile a generator specification string into a generator.
  * @param {string} input - The pattern string to compile
+ * @param {boolean} [capitalize=false] - Capitalize generator output
  * @returns A name generator
  */
-NameGen.compile = function(input) {
+NameGen.compile = function(input, capitalize) {
     var SYMBOL = 0, LITERAL = 1;
     var stack = [];
 
@@ -247,21 +265,9 @@ NameGen.compile = function(input) {
     if (stack.length !== 1) {
         throw new Error('Missing closing bracket.');
     }
-    return pop();
-};
-
-/**
- * Decorate a generator by capitalizing its output.
- * @param generator - The generator to be decorated.
- * @constructor
- */
-NameGen.Capitalizer = function(generator) {
-    if (!(this instanceof NameGen.Capitalizer)) {
-        return new NameGen.Capitalizer(generator);
+    if (capitalize) {
+        return NameGen.Capitalizer(pop());
+    } else {
+        return pop();
     }
-    /** @method */
-    this.toString = function() {
-        return NameGen._capitalize(generator.toString());
-    };
-    return this;
 };
