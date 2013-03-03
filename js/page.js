@@ -9,7 +9,7 @@ function fill() {
     var $output = $('#output'),
         $w = $(window),
         $b = $('body');
-    while ($w.scrollTop() + $w.height() > $b.height()) {
+    while (generator && $w.scrollTop() + $w.height() > $b.height()) {
         for (var i = 0; i < COLUMNS; i++) {
             $output.append($('<li>' + generator + '</li>'));
         }
@@ -21,6 +21,7 @@ function update(event) {
     clear();
     try {
         generator = NameGen.compile($('#spec').val());
+        if (generator === '') generator = null;
         $('#spec').removeClass('invalid');
         fill();
     } catch (e) {
