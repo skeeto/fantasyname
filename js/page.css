@@ -7,6 +7,11 @@ body {
     background-color: #eef;
 }
 
+h1 {
+    font-size: 24px;
+    margin-bottom: 5px;
+}
+
 #spec {
     text-align: center;
     width: 600px;
@@ -19,7 +24,7 @@ body {
 #output {
     width: 600px;
     padding: 0px;
-    margin: 20px auto;
+    margin: 5px auto 0px auto;
 }
 
 #output li {
