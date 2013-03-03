@@ -3,19 +3,55 @@
  * @version 1.0
  * @license Public Domain
  *
+ * This library is designed after the RinkWorks Fantasy Name Generator.
+ * @see http://www.rinkworks.com/namegen/
+ *
  * @example
  * var generator = NameGen.compile("sV'i");
  * generator.toString();  // Emits a new name on each call
  * // => "entheu'loaf"
  *
- *   A name generator is anything with a toString() method. The
- * generators created by this module emit a different string on each
- * call of toString().
+ * ## Pattern Syntax
  *
- *   The generator constructors (Random, Sequence) perform additional
- * optimizations when *not* used with the `new` keyword: they may pass
- * through a provided generator, combine provided generators, or even
- * return a simple string.
+ *   The compile() function creates a name generator based on an input
+ * pattern. The letters s, v, V, c, B, C, i, m, M, D, and d represent
+ * different types of random replacements. Everything else is emitted
+ * literally.
+ *
+ *   s - generic syllable
+ *   v - vowel
+ *   V - vowel or vowel combination
+ *   c - consonant
+ *   B - consonant or consonant combination suitable for beginning a word
+ *   C - consonant or consonant combination suitable anywhere in a word
+ *   i - for an insult
+ *   m - for a mushy name
+ *   M - for a mushy name ending
+ *   D - or consonant suited for a stupid person's name
+ *   d - suited for a stupid person's name (always begins with a vowel)
+ *
+ *   All characters between parenthesis () are emitted literally. For
+ * example, the pattern "s(dim)", emits a random generic syllable
+ * followed by "dim".
+ *
+ *   Characters between angle brackets <> emit patterns from the table
+ * above. Imagine the entire pattern is wrapped in one of these.
+ *
+ *   In both types of groupings, a vertical bar | denotes a random
+ * choice. Empty groups are allowed. For example, "(foo|bar)" emits
+ * either "foo" or "bar". The pattern "<c|v|>" emits a constant,
+ * vowel, or nothing at all.
+ *
+ * ## Internals
+ *
+ *   A name generator is anything with a toString() method, including,
+ * importantly, strings themselves. The generator constructors
+ * (Random, Sequence) perform additional optimizations when *not* used
+ * with the `new` keyword: they may pass through a provided generator,
+ * combine provided generators, or even return a simple string.
+ *
+ *   New pattern symbols added to NameGen.symbols will automatically
+ * be used by the compiler.
  */
 
 /**
