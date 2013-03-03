@@ -27,7 +27,7 @@ function update(event) {
         if ($('#capitalize').prop('checked')) {
             generator = NameGen.Capitalizer(generator);
         }
-        if (generator === '') generator = null;
+        if (generator.max() === 0) generator = null;
         $('#spec').removeClass('invalid');
         fill();
     } catch (e) {

@@ -55,6 +55,35 @@
  */
 
 /**
+ * @returns Last element of the array.
+ * @method
+ */
+Array.prototype.last = function() {
+    return this[this.length - 1];
+};
+
+/**
+ * Number of generated output possibilities (generator function).
+ * @returns {number}
+ * @method
+ */
+String.prototype.combinations = function() { return 1; };
+
+/**
+ * Longest possible output length (generator function).
+ * @returns {number}
+ * @method
+ */
+String.prototype.min = function() { return this.length; };
+
+/**
+ * Shortest possible output length (generator function).
+ * @returns {number}
+ * @method
+ */
+String.prototype.max = function() { return this.length; };
+
+/**
  * @namespace NameGen Everything relevant to the name generators.
  */
 var NameGen = NameGen || {};
@@ -195,6 +224,39 @@ NameGen.Random.prototype.toString = function() {
 };
 
 /**
+ * Number of generated output possibilities (generator function).
+ * @returns {number}
+ * @method
+ */
+NameGen.Random.prototype.combinations = function() {
+    return Math.max(1, this.sub.reduce(function (total, g) {
+        return total + g.combinations();
+    }, 0));
+};
+
+/**
+ * Shortest possible output length (generator function).
+ * @returns {number}
+ * @method
+ */
+NameGen.Random.prototype.min = function() {
+    return Math.min.apply(null, this.sub.map(function(g) {
+        return g.min();
+    }));
+};
+
+/**
+ * Longest possible output length (generator function).
+ * @returns {number}
+ * @method
+ */
+NameGen.Random.prototype.max = function() {
+    return Math.max.apply(null, this.sub.map(function(g) {
+        return g.max();
+    }));
+};
+
+/**
  * Runs each provided generator in turn when generating.
  * @param {Array} generators - An array of name generators
  * @returns A name generator, not necessarily a new one
@@ -226,6 +288,39 @@ NameGen.Sequence.prototype.toString = function() {
 };
 
 /**
+ * Number of generated output possibilities (generator function).
+ * @returns {number}
+ * @method
+ */
+NameGen.Sequence.prototype.combinations = function() {
+    return 1, this.sub.reduce(function (total, g) {
+        return total * g.combinations();
+    }, 1);
+};
+
+/**
+ * Shortest possible output length (generator function).
+ * @returns {number}
+ * @method
+ */
+NameGen.Sequence.prototype.min = function() {
+    return this.sub.reduce(function(total, g) {
+        return total + g.min();
+    }, 0);
+};
+
+/**
+ * Longest possible output length (generator function).
+ * @returns {number}
+ * @method
+ */
+NameGen.Sequence.prototype.max = function() {
+    return this.sub.reduce(function(total, g) {
+        return total + g.max();
+    }, 0);
+};
+
+/**
  * Decorate a generator by capitalizing its output.
  * @param generator - The generator to be decorated.
  * @returns A new generator.
@@ -239,15 +334,10 @@ NameGen.Capitalizer = function(generator) {
     this.toString = function() {
         return NameGen._capitalize(generator.toString());
     };
+    this.combinations = generator.combinations.bind(generator);
+    this.min = generator.min.bind(generator);
+    this.max = generator.max.bind(generator);
     return this;
-};
-
-/**
- * @returns Last element of the array.
- * @method
- */
-Array.prototype.last = function() {
-    return this[this.length - 1];
 };
 
 /**
@@ -326,5 +416,8 @@ NameGen.Reverser = function(generator) {
     this.toString = function() {
         return generator.toString().split('').reverse().join('');
     };
+    this.combinations = generator.combinations.bind(generator);
+    this.min = generator.min.bind(generator);
+    this.max = generator.max.bind(generator);
     return this;
 };
