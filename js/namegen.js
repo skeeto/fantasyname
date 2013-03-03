@@ -51,7 +51,39 @@ NameGen.symbols = {
 };
 
 /**
- * Selects a random generator from the given when generating.
+ * Return true if the given thing is a string.
+ */
+NameGen._isString = function (object) {
+    return Object.prototype.toString.call(object) === '[object String]';
+};
+
+/**
+ * Combine adjacent strings in the array.
+ */
+NameGen._compress = function (array) {
+    var emit = [], accum = [];
+    function dump() {
+        if (accum.length > 0) {
+            emit.push(accum.join(''));
+            accum.length = 0;
+        }
+    }
+    for (var i = 0; i < array.length; i++) {
+        if (NameGen._isString(array[i])) {
+            accum.push(array[i]);
+        } else {
+            dump();
+            emit.push(array[i]);
+        }
+    }
+    dump();
+    return emit;
+};
+
+/**
+ * When emitting, selects a random generator.
+ * @constructor
+ * @param {Array} generators - An array of name generators
  */
 NameGen.Random = function(generators) {
     if (!(this instanceof NameGen.Random)) {
@@ -81,6 +113,7 @@ NameGen.Random.prototype.toString = function() {
  * Runs each provided generator in turn when generating.
  */
 NameGen.Sequence = function(generators) {
+    generators = NameGen._compress(generators);
     if (!(this instanceof NameGen.Sequence)) {
         switch (generators.length) {
         case 0:
