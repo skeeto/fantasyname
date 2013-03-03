@@ -311,3 +311,20 @@ NameGen.compile = function(input, capitalize) {
         return pop();
     }
 };
+
+/**
+ * Decorate a generator by reversing its output.
+ * @param generator - The generator to be decorated.
+ * @returns A new generator.
+ * @constructor
+ */
+NameGen.Reverser = function(generator) {
+    if (!(this instanceof NameGen.Reverser)) {
+        return new NameGen.Reverser(generator);
+    }
+    /** @method */
+    this.toString = function() {
+        return generator.toString().split('').reverse().join('');
+    };
+    return this;
+};
