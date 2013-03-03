@@ -13,12 +13,33 @@ h1 {
 }
 
 #spec {
+    display: inline-block;
     text-align: center;
-    width: 600px;
+    width: 500px;
     border: 1px solid black;
     font-size: 20px;
     padding: 5px;
     border-radius: 5px;
+    margin: 0px auto 5px auto;
+    vertical-align: text-top;
+}
+
+.options {
+    display: inline-block;
+    text-align: left;
+    vertical-align: text-top;
+    margin-left: 3px;
+}
+
+.option {
+    display: block;
+    white-space: nowrap;
+}
+
+.option input {
+    padding: 0px;
+    margin: 0px;
+    margin-right: 0px;
 }
 
 #output {

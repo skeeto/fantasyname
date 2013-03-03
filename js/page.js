@@ -21,6 +21,12 @@ function update(event) {
     clear();
     try {
         generator = NameGen.compile($('#spec').val());
+        if ($('#reverse').prop('checked')) {
+            generator = NameGen.Reverser(generator);
+        }
+        if ($('#capitalize').prop('checked')) {
+            generator = NameGen.Capitalizer(generator);
+        }
         if (generator === '') generator = null;
         $('#spec').removeClass('invalid');
         fill();
@@ -30,6 +36,6 @@ function update(event) {
 }
 
 $(document).ready(function() {
-    $('#input').on('submit input', update);
+    $('#input').on('submit input change', update);
     $(window).on('scroll', fill);
 });
