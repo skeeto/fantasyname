@@ -113,6 +113,17 @@ NameGen._compress = function (array) {
 };
 
 /**
+ * @param {string} string
+ * @returns {string}
+ */
+NameGen._capitalize = function(string) {
+    return string.replace(/^./, function(c) {
+        return c.toUpperCase();
+    });
+};
+
+
+/**
  * When emitting, selects a random generator.
  * @param {Array} generators - An array of name generators
  * @returns A name generator, not necessarily a new one
@@ -237,4 +248,20 @@ NameGen.compile = function(input) {
         throw new Error('Missing closing bracket.');
     }
     return pop();
+};
+
+/**
+ * Decorate a generator by capitalizing its output.
+ * @param generator - The generator to be decorated.
+ * @constructor
+ */
+NameGen.Capitalizer = function(generator) {
+    if (!(this instanceof NameGen.Capitalizer)) {
+        return new NameGen.Capitalizer(generator);
+    }
+    /** @method */
+    this.toString = function() {
+        return NameGen._capitalize(generator.toString());
+    };
+    return this;
 };
