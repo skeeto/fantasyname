@@ -25,6 +25,7 @@ body {
 #output li {
     display: inline-block;
     width: 150px;
+    overflow: hidden;
 }
 
 input.invalid {
