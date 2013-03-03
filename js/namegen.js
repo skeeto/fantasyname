@@ -65,7 +65,8 @@ NameGen.Random = function(generators) {
         }
     }
     this.sub = generators;
-}
+    return this;
+};
 
 NameGen.Random.prototype.toString = function() {
     if (this.sub.length > 0) {
@@ -91,7 +92,8 @@ NameGen.Sequence = function(generators) {
         }
     }
     this.sub = generators;
-}
+    return this;
+};
 
 NameGen.Sequence.prototype.toString = function() {
     return this.sub.join('');
@@ -161,4 +163,4 @@ NameGen.compile = function(input) {
         throw new Error('Missing closing bracket.');
     }
     return pop();
-}
+};
