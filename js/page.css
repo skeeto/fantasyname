@@ -26,6 +26,8 @@ body {
     display: inline-block;
     width: 150px;
     overflow: hidden;
+    font-size: 14px;
+    height: 16px;
 }
 
 input.invalid {

@@ -1,15 +1,19 @@
-var OUTPUT_COUNT = 120;
-
+var COLUMNS = 4,
+    HEIGHT = 16;
 var generator = null;
 
 function clear() {
     $('#output').empty();
 }
 
-function append(n) {
-    var $output = $('#output');
-    for (var i = 0; i < n; i++) {
-        $output.append($('<li>' + generator + '</li>'));
+function fill() {
+    var $output = $('#output'),
+        $w = $(window),
+        $b = $('body');
+    while ($w.scrollTop() + $w.height() > $b.height() + HEIGHT) {
+        for (var i = 0; i < COLUMNS; i++) {
+            $output.append($('<li>' + generator + '</li>'));
+        }
     }
 }
 
@@ -19,7 +23,7 @@ function update(event) {
     try {
         generator = NameGen.compile($('#spec').val());
         $('#spec').removeClass('invalid');
-        append(OUTPUT_COUNT);
+        fill();
     } catch (e) {
         $('#spec').addClass('invalid');
     }
@@ -27,4 +31,5 @@ function update(event) {
 
 $(document).ready(function() {
     $('#input').on('submit input', update);
+    $(window).on('scroll', fill);
 });
