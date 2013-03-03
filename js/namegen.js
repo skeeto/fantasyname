@@ -1,4 +1,6 @@
-var symbols = {
+var NameGen = NameGen || {};
+
+NameGen.symbols = {
     s: ['ach', 'ack', 'ad', 'age', 'ald', 'ale', 'an', 'ang', 'ar', 'ard',
         'as', 'ash', 'at', 'ath', 'augh', 'aw', 'ban', 'bel', 'bur', 'cer',
         'cha', 'che', 'dan', 'dar', 'del', 'den', 'dra', 'dyn', 'ech', 'eld',
@@ -51,14 +53,14 @@ var symbols = {
 /**
  * Selects a random generator from the given when generating.
  */
-function RandomGenerator(generators) {
-    if (!(this instanceof RandomGenerator)) {
-        return new RandomGenerator(generators);
+NameGen.Random = function(generators) {
+    if (!(this instanceof NameGen.Random)) {
+        return new NameGen.Random(generators);
     }
     this.sub = generators;
 }
 
-RandomGenerator.prototype.toString = function() {
+NameGen.Random.prototype.toString = function() {
     if (this.sub.length > 0) {
         var i = Math.floor(Math.random() * this.sub.length);
         return this.sub[i].toString();
@@ -70,24 +72,24 @@ RandomGenerator.prototype.toString = function() {
 /**
  * Runs each provided generator in turn when generating.
  */
-function SequenceGenerator(generators) {
-    if (!(this instanceof SequenceGenerator)) {
-        return new SequenceGenerator(generators);
+NameGen.Sequence = function(generators) {
+    if (!(this instanceof NameGen.Sequence)) {
+        return new NameGen.Sequence(generators);
     }
     this.sub = generators;
 }
 
-SequenceGenerator.prototype.toString = function() {
+NameGen.Sequence.prototype.toString = function() {
     return this.sub.join('');
 };
 
 /**
- * List of symbol generators.
+ * List of symbol NameGen.generators.
  */
-var generators = (function() {
+NameGen.generators = (function() {
     var generators = {};
-    for (var symbol in symbols) {
-        generators[symbol] = new RandomGenerator(symbols[symbol]);
+    for (var symbol in NameGen.symbols) {
+        generators[symbol] = new NameGen.Random(NameGen.symbols[symbol]);
     }
     return generators;
 }());
@@ -100,7 +102,7 @@ Array.prototype.last = function() { return this[this.length - 1]; };
 /**
  * Compile a generator specification string into a generator.
  */
-function compile(input) {
+NameGen.compile = function(input) {
     var SYMBOL = 0, LITERAL = 1;
     var stack = [];
 
@@ -108,7 +110,7 @@ function compile(input) {
         stack.push({mode: mode, set: [[]]});
     }
     function pop() {
-        return new RandomGenerator(stack.pop().set.map(SequenceGenerator));
+        return new NameGen.Random(stack.pop().set.map(NameGen.Sequence));
     }
 
     push(SYMBOL);
@@ -136,7 +138,7 @@ function compile(input) {
             if (stack.last().mode === LITERAL) {
                 stack.last().set.last().push(c);
             } else {
-                stack.last().set.last().push(generators[c] || c);
+                stack.last().set.last().push(NameGen.generators[c] || c);
             }
             break;
         }

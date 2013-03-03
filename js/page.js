@@ -5,7 +5,7 @@ $(document).ready(function() {
         event.preventDefault();
         var $output = $('#output').empty();
         try {
-            var generator = compile($('#spec').val());
+            var generator = NameGen.compile($('#spec').val());
             for (var i = 0; i < OUTPUT_COUNT; i++) {
                 $output.append($('<li>' + generator + '</li>'));
             }
