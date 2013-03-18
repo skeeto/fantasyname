@@ -42,6 +42,11 @@
  * either "foo" or "bar". The pattern "<c|v|>" emits a constant,
  * vowel, or nothing at all.
  *
+ *   An exclamation point ! means to capitalize the component that
+ * follows it. For example "!(foo)" will emit "Foo" and "v!s" will
+ * emit a lowercase vowel followed by a capitalized syllable, like
+ * "eRod".
+ *
  * ## Internals
  *
  *   A name generator is anything with a toString() method, including,
@@ -360,6 +365,7 @@ NameGen.Reverser = function(generator) {
  */
 NameGen._Group = function() {
     this.set = [[]];
+    this.wrapper = null;
 };
 
 /**
@@ -367,6 +373,10 @@ NameGen._Group = function() {
  * @returns This object
  */
 NameGen._Group.prototype.add = function(g) {
+    if (this.wrapper) {
+        g = new this.wrapper(g);
+        this.wrapper = null;
+    }
     this.set[this.set.length - 1].push(g);
     return this;
 };
@@ -377,6 +387,16 @@ NameGen._Group.prototype.add = function(g) {
  */
 NameGen._Group.prototype.split = function() {
     this.set.push([]);
+    return this;
+};
+
+/**
+ * Wrap the next added generator with this decorator.
+ * @param type The type of the decorator to wrap.
+ * @returns This object
+ */
+NameGen._Group.prototype.wrap = function(type) {
+    this.wrapper = type;
     return this;
 };
 
@@ -452,6 +472,11 @@ NameGen.compile = function(input) {
         case '|':
             stack.top().split();
             break;
+        case '!':
+            if (stack.top() instanceof NameGen._Symbol) {
+                stack.top().wrap(NameGen.Capitalizer);
+                break;
+            } // fall through
         default:
             stack.top().add(c);
             break;
