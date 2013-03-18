@@ -190,7 +190,6 @@ NameGen._capitalize = function(string) {
     });
 };
 
-
 /**
  * When emitting, selects a random generator.
  * @param {Array} generators - An array of name generators
