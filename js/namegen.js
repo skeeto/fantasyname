@@ -87,6 +87,12 @@ String.prototype.min = function() { return this.length; };
 String.prototype.max = function() { return this.length; };
 
 /**
+ * List all possible outputs (generator function).
+ * @returns {Array} An array of output strings.
+ */
+String.prototype.enumerate = function() { return [String(this)]; };
+
+/**
  * @namespace NameGen Everything relevant to the name generators.
  */
 var NameGen = NameGen || {};
@@ -258,6 +264,11 @@ NameGen.Random.prototype.max = function() {
     }));
 };
 
+NameGen.Random.prototype.enumerate = function() {
+    var enums = this.sub.map(function(g) { return g.enumerate(); });
+    return Array.prototype.concat.apply(enums[0], enums.slice(1));
+};
+
 /**
  * Runs each provided generator in turn when generating.
  * @param {Array} generators - An array of name generators
@@ -322,6 +333,11 @@ NameGen.Sequence.prototype.max = function() {
     }, 0);
 };
 
+NameGen.Sequence.prototype.enumerate = function() {
+    var enums = this.sub.map(function(g) { return g.enumerate(); });
+    // XXX
+};
+
 /**
  * Decorate a generator by capitalizing its output.
  * @param generator - The generator to be decorated.
@@ -339,6 +355,9 @@ NameGen.Capitalizer = function(generator) {
     this.combinations = generator.combinations.bind(generator);
     this.min = generator.min.bind(generator);
     this.max = generator.max.bind(generator);
+    this.enumerate = function() {
+        return generator.enumerate().map(NameGen._capitalize);
+    };
     return this;
 };
 
@@ -359,6 +378,11 @@ NameGen.Reverser = function(generator) {
     this.combinations = generator.combinations.bind(generator);
     this.min = generator.min.bind(generator);
     this.max = generator.max.bind(generator);
+    this.enumerate = function() {
+        return generator.enumerate().map(function(s) {
+            return s.split('').reverse().join('');
+        });
+    };
     return this;
 };
 
