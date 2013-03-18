@@ -55,14 +55,6 @@
  */
 
 /**
- * @returns Last element of the array.
- * @method
- */
-Array.prototype.last = function() {
-    return this[this.length - 1];
-};
-
-/**
  * Number of generated output possibilities (generator function).
  * @returns {number}
  * @method
@@ -341,68 +333,6 @@ NameGen.Capitalizer = function(generator) {
 };
 
 /**
- * Compile a generator specification string into a generator.
- * @param {string} input - The pattern string to compile
- * @param {boolean} [capitalize=false] - Capitalize generator output
- * @returns A name generator
- */
-NameGen.compile = function(input, capitalize) {
-    var SYMBOL = 0, LITERAL = 1;
-    var stack = [];
-
-    function push(mode) {
-        stack.push({mode: mode, set: [[]]});
-    }
-    function pop() {
-        return NameGen.Random(stack.pop().set.map(NameGen.Sequence));
-    }
-
-    push(SYMBOL);
-    for (var i = 0; i < input.length; i++) {
-        var c = input[i];
-        switch (c) {
-        case '<':
-            push(SYMBOL);
-            break;
-        case '(':
-            push(LITERAL);
-            break;
-        case '>':
-        case ')':
-            if (stack.length === 1) {
-                throw new Error('Unbalanced brackets.');
-            } else if (c === '>' && stack.last().mode === LITERAL) {
-                throw new Error('Unexpected ">" in input.');
-            } else if (c === ')' && stack.last().mode === SYMBOL) {
-                throw new Error('Unexpected ")" in input.');
-            }
-            var top = pop();
-            stack.last().set.last().push(top);
-            break;
-        case '|':
-            stack.last().set.push([]);
-            break;
-        default:
-            if (stack.last().mode === LITERAL) {
-                stack.last().set.last().push(c);
-            } else {
-                var generators = NameGen.Random(NameGen.symbols[c] || [c]);
-                stack.last().set.last().push(generators);
-            }
-            break;
-        }
-    }
-    if (stack.length !== 1) {
-        throw new Error('Missing closing bracket.');
-    }
-    if (capitalize) {
-        return NameGen.Capitalizer(pop());
-    } else {
-        return pop();
-    }
-};
-
-/**
  * Decorate a generator by reversing its output.
  * @param generator - The generator to be decorated.
  * @returns A new generator.
@@ -420,4 +350,116 @@ NameGen.Reverser = function(generator) {
     this.min = generator.min.bind(generator);
     this.max = generator.max.bind(generator);
     return this;
+};
+
+/* Everything below here is the compiler. */
+
+/**
+ * Builds up a generator grouping in the compiler.
+ * @constructor
+ */
+NameGen._Group = function() {
+    this.set = [[]];
+};
+
+/**
+ * @param g The generator to add to this group
+ * @returns This object
+ */
+NameGen._Group.prototype.add = function(g) {
+    this.set[this.set.length - 1].push(g);
+    return this;
+};
+
+/**
+ * Start a new grouping in this generator group.
+ * @returns This object
+ */
+NameGen._Group.prototype.split = function() {
+    this.set.push([]);
+    return this;
+};
+
+/**
+ * @returns A generator built from this grouping.
+ */
+NameGen._Group.prototype.emit = function() {
+    return NameGen.Random(this.set.map(NameGen.Sequence));
+};
+
+/**
+ * Builds up a literal grouping in the compiler.
+ * @constructor
+ */
+NameGen._Literal = function() {
+    NameGen._Group.call(this);
+};
+NameGen._Literal.prototype = Object.create(NameGen._Group.prototype);
+
+/**
+ * Builds up a symbolic grouping in the compiler.
+ * @constructor
+ */
+NameGen._Symbol = function() {
+    NameGen._Group.call(this);
+};
+NameGen._Symbol.prototype = Object.create(NameGen._Group.prototype);
+
+/**
+ * Add a new generator based on a character.
+ * @param c The generator's symbol
+ * @returns This object
+ */
+NameGen._Symbol.prototype.add = function(c) {
+    var g = NameGen.Random(NameGen.symbols[c] || [c]);
+    NameGen._Literal.prototype.add.call(this, g);
+    return this;
+};
+
+/**
+ * Compile a generator specification string into a generator.
+ * @param {string} input - The pattern string to compile
+ * @returns A name generator
+ */
+NameGen.compile = function(input) {
+    var stack = [];
+    stack.top = function() {
+        return stack[stack.length - 1];
+    };
+
+    stack.push(new NameGen._Symbol());
+    for (var i = 0; i < input.length; i++) {
+        var c = input[i];
+        switch (c) {
+        case '<':
+            stack.push(new NameGen._Symbol());
+            break;
+        case '(':
+            stack.push(new NameGen._Literal());
+            break;
+        case '>':
+        case ')':
+            if (stack.length === 1) {
+                throw new Error('Unbalanced brackets.');
+            } else if (c === '>' && stack.top() instanceof NameGen._Literal) {
+                throw new Error('Unexpected ">" in input.');
+            } else if (c === ')' && stack.top() instanceof NameGen._Symbol) {
+                throw new Error('Unexpected ")" in input.');
+            }
+            var last = stack.pop().emit();
+            stack.top().add(last);
+            break;
+        case '|':
+            stack.top().split();
+            break;
+        default:
+            stack.top().add(c);
+            break;
+        }
+    }
+    if (stack.length !== 1) {
+        throw new Error('Missing closing bracket.');
+    } else {
+        return stack.top().emit();
+    }
 };
