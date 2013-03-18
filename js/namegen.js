@@ -24,11 +24,11 @@
  *   c - consonant
  *   B - consonant or consonant combination suitable for beginning a word
  *   C - consonant or consonant combination suitable anywhere in a word
- *   i - for an insult
- *   m - for a mushy name
- *   M - for a mushy name ending
- *   D - or consonant suited for a stupid person's name
- *   d - suited for a stupid person's name (always begins with a vowel)
+ *   i - insult
+ *   m - mushy name
+ *   M - mushy name ending
+ *   D - consonant suited for a stupid person's name
+ *   d - syllable suited for a stupid person's name (begins with a vowel)
  *
  *   All characters between parenthesis () are emitted literally. For
  * example, the pattern "s(dim)", emits a random generic syllable
