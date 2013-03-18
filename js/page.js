@@ -21,12 +21,6 @@ function update(event) {
     clear();
     try {
         generator = NameGen.compile($('#spec').val());
-        if ($('#reverse').prop('checked')) {
-            generator = NameGen.Reverser(generator);
-        }
-        if ($('#capitalize').prop('checked')) {
-            generator = NameGen.Capitalizer(generator);
-        }
         if (generator.max() === 0) generator = null;
         $('#spec').removeClass('invalid');
         fill();

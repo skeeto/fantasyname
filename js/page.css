@@ -15,20 +15,13 @@ h1 {
 #spec {
     display: inline-block;
     text-align: center;
-    width: 500px;
+    width: 600px;
     border: 1px solid black;
     font-size: 20px;
     padding: 5px;
     border-radius: 5px;
     margin: 0px auto 5px auto;
     vertical-align: text-top;
-}
-
-.options {
-    display: inline-block;
-    text-align: left;
-    vertical-align: text-top;
-    margin-left: 3px;
 }
 
 .option {
