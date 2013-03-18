@@ -436,9 +436,11 @@ NameGen._Symbol.prototype = Object.create(NameGen._Group.prototype);
  * @param c The generator's symbol
  * @returns This object
  */
-NameGen._Symbol.prototype.add = function(c) {
-    var g = NameGen.Random(NameGen.symbols[c] || [c]);
-    NameGen._Literal.prototype.add.call(this, g);
+NameGen._Symbol.prototype.add = function(g, literal) {
+    if (!literal) {
+        g = NameGen.Random(NameGen.symbols[g] || [g]);
+    }
+    NameGen._Group.prototype.add.call(this, g);
     return this;
 };
 
@@ -473,7 +475,7 @@ NameGen.compile = function(input) {
                 throw new Error('Unexpected ")" in input.');
             }
             var last = stack.pop().emit();
-            stack.top().add(last);
+            stack.top().add(last, true);
             break;
         case '|':
             stack.top().split();
