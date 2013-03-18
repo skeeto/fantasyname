@@ -43,9 +43,15 @@
  * vowel, or nothing at all.
  *
  *   An exclamation point ! means to capitalize the component that
- * follows it. For example "!(foo)" will emit "Foo" and "v!s" will
+ * follows it. For example, "!(foo)" will emit "Foo" and "v!s" will
  * emit a lowercase vowel followed by a capitalized syllable, like
  * "eRod".
+ *
+ *   A tilde ~ means to reverse the letters of the component that
+ * follows it. For example, "~(foo)" will emit "oof". To reverse an
+ * entire template, wrap it in brackets. For example, to reverse
+ * "sV'i" as a whole use "~<sV'i>". The template "~sV'i" will only
+ * reverse the initial syllable.
  *
  * ## Internals
  *
@@ -365,7 +371,7 @@ NameGen.Reverser = function(generator) {
  */
 NameGen._Group = function() {
     this.set = [[]];
-    this.wrapper = null;
+    this.wrappers = [];
 };
 
 /**
@@ -373,9 +379,9 @@ NameGen._Group = function() {
  * @returns This object
  */
 NameGen._Group.prototype.add = function(g) {
-    if (this.wrapper) {
-        g = new this.wrapper(g);
-        this.wrapper = null;
+    while (this.wrappers.length > 0) {
+        var type = this.wrappers.pop();
+        g = new type(g);
     }
     this.set[this.set.length - 1].push(g);
     return this;
@@ -396,7 +402,7 @@ NameGen._Group.prototype.split = function() {
  * @returns This object
  */
 NameGen._Group.prototype.wrap = function(type) {
-    this.wrapper = type;
+    this.wrappers.push(type);
     return this;
 };
 
@@ -475,8 +481,17 @@ NameGen.compile = function(input) {
         case '!':
             if (stack.top() instanceof NameGen._Symbol) {
                 stack.top().wrap(NameGen.Capitalizer);
-                break;
-            } // fall through
+            } else {
+                stack.top().add(c);
+            }
+            break;
+        case '~':
+            if (stack.top() instanceof NameGen._Symbol) {
+                stack.top().wrap(NameGen.Reverser);
+            } else {
+                stack.top().add(c);
+            }
+            break;
         default:
             stack.top().add(c);
             break;
