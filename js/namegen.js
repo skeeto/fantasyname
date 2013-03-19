@@ -264,6 +264,10 @@ NameGen.Random.prototype.max = function() {
     }));
 };
 
+/**
+ * Enumerate all possible outputs.
+ * @returns {Array} An array of all possible outputs.
+ */
 NameGen.Random.prototype.enumerate = function() {
     var enums = this.sub.map(function(g) { return g.enumerate(); });
     return Array.prototype.concat.apply(enums[0], enums.slice(1));
@@ -333,9 +337,27 @@ NameGen.Sequence.prototype.max = function() {
     }, 0);
 };
 
+/**
+ * Enumerate all possible outputs.
+ * @returns {Array} An array of all possible outputs.
+ */
 NameGen.Sequence.prototype.enumerate = function() {
     var enums = this.sub.map(function(g) { return g.enumerate(); });
-    // XXX
+    function enumerate(enums, prefix) {
+        if (enums.length === 1) {
+            return enums[0].map(function(e) {
+                return prefix + e;
+            });
+        } else {
+            var output = [];
+            var rest = enums.slice(1);
+            for (var i = 0; i < enums[0].length; i++) {
+                output.push(enumerate(rest, prefix + enums[0][i]));
+            }
+            return Array.prototype.concat.apply([], output);
+        }
+    }
+    return enumerate(enums, '');
 };
 
 /**
