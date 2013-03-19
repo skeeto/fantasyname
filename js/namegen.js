@@ -89,6 +89,7 @@ String.prototype.max = function() { return this.length; };
 /**
  * List all possible outputs (generator function).
  * @returns {Array} An array of output strings.
+ * @method
  */
 String.prototype.enumerate = function() { return [String(this)]; };
 
@@ -267,6 +268,7 @@ NameGen.Random.prototype.max = function() {
 /**
  * Enumerate all possible outputs.
  * @returns {Array} An array of all possible outputs.
+ * @method
  */
 NameGen.Random.prototype.enumerate = function() {
     var enums = this.sub.map(function(g) { return g.enumerate(); });
@@ -340,6 +342,7 @@ NameGen.Sequence.prototype.max = function() {
 /**
  * Enumerate all possible outputs.
  * @returns {Array} An array of all possible outputs.
+ * @method
  */
 NameGen.Sequence.prototype.enumerate = function() {
     var enums = this.sub.map(function(g) { return g.enumerate(); });
