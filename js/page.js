@@ -16,16 +16,41 @@ function fill() {
     }
 }
 
+function group(n) {
+    var string = n.toString();
+    if (/^\d+$/.test(string)) {
+        return string.split('').reverse().join('')
+            .split(/(\d\d\d)/).filter(function(s) {
+                return s !== '';
+            }).map(function(s) {
+                return s.split('').reverse().join('');
+            }).reverse().join(',');
+    } else {
+        return string;
+    }
+}
+
 function update(event) {
     if (event) event.preventDefault();
     clear();
     try {
         generator = NameGen.compile($('#spec').val());
-        if (generator.max() === 0) generator = null;
         $('#spec').removeClass('invalid');
+        if (generator.max() === 0) {
+            generator = null;
+            $('#count').text('');
+        } else {
+            var count = group(generator.combinations());
+            if (count === 1) {
+                $('#count').text(count + ' possibility');
+            } else {
+                $('#count').text(count + ' possibilities');
+            }
+        }
         fill();
     } catch (e) {
         $('#spec').addClass('invalid');
+        $('#count').text('invalid');
     }
 }
 

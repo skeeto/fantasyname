@@ -1,10 +1,11 @@
 body {
     font-family: sans-serif;
-    width: 700px;
+    width: 600px;
     text-align: center;
     margin: 0 auto;
     box-sizing: border-box;
     background-color: #eef;
+    overflow-y: scroll;
 }
 
 h1 {
@@ -20,7 +21,7 @@ h1 {
     font-size: 20px;
     padding: 5px;
     border-radius: 5px;
-    margin: 0px auto 5px auto;
+    margin: 0px auto;
     vertical-align: text-top;
 }
 
@@ -53,6 +54,14 @@ input.invalid {
     box-shadow: 0px 0px 3px 3px pink;
 }
 
+#count {
+    font-size: 10px;
+    color: gray;
+    width: 400px;
+    margin: 2px auto;
+    height: 12px;
+}
+
 #reference {
     display: none;
     text-align: left;
@@ -76,9 +85,9 @@ input.invalid {
 }
 
 #instructions {
-    width: 610px;
-    margin: -7px auto;
+    margin: -2px auto;
     text-align: left;
+    float: left;
 }
 
 #instructions a {
