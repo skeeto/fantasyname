@@ -1,4 +1,3 @@
-var COLUMNS = 4;
 var generator = null;
 
 function clear() {
@@ -10,9 +9,7 @@ function fill() {
         $w = $(window),
         $b = $('body');
     while (generator && $w.scrollTop() + $w.height() > $b.height()) {
-        for (var i = 0; i < COLUMNS; i++) {
-            $output.append($('<li>' + generator + '</li>'));
-        }
+        $output.append($('<li>' + generator + '</li>'));
     }
 }
 
