@@ -44,10 +44,11 @@ h1 {
 
 #output li {
     display: inline-block;
-    width: 150px;
     overflow: hidden;
     font-size: 14px;
     height: 16px;
+    padding: 0 15px;
+    margin: 1px 0;
 }
 
 input.invalid {
