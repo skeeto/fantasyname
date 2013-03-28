@@ -374,7 +374,11 @@ NameGen.Sequence.prototype.enumerate = function() {
 NameGen.fromTransform = function(f) {
     function G(generator) {
         if (!(this instanceof G)) {
-            return new G(generator);
+            if (NameGen._isString(generator)) {
+                return f(generator);
+            } else {
+                return new G(generator);
+            }
         }
         this.generator = generator;
         return this;
@@ -429,7 +433,7 @@ NameGen._Group = function() {
 NameGen._Group.prototype.add = function(g) {
     while (this.wrappers.length > 0) {
         var type = this.wrappers.pop();
-        g = new type(g);
+        g = type(g);
     }
     this.set[this.set.length - 1].push(g);
     return this;
