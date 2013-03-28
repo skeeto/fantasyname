@@ -371,6 +371,10 @@ NameGen.Sequence.prototype.enumerate = function() {
     return enumerate(enums, '');
 };
 
+/**
+ * Create a new type of generator based on a string transform function.
+ * @param {Function} f
+ */
 NameGen.fromTransform = function(f) {
     function G(generator) {
         if (!(this instanceof G)) {
