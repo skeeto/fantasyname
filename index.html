@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Fantasy Name Generator</title>
+    <link rel="stylesheet" href="page.css"/>
+    <script src="namegen.js"></script>
+    <script src="http://code.jquery.com/jquery-latest.min.js"></script>
+    <script src="page.js"></script>
+  </head>
+  <body>
+    <h1>Fantasy Name Generator</h1>
+
+    <form id="input">
+      <input type="text" id="spec"/>
+    </form>
+
+    <div id="instructions">
+      <a href="#" id="help">Help</a>
+    </div>
+
+    <div id="count"></div>
+
+    <div id="reference">
+      <h2>Symbols</h2>
+      <ul>
+        <li><span class="symbol">s</span>
+          generic syllable
+        </li>
+        <li><span class="symbol">v</span>
+          vowel
+        </li>
+        <li><span class="symbol">V</span>
+          vowel or vowel combination
+        </li>
+        <li><span class="symbol">c</span>
+          consonant
+        </li>
+        <li><span class="symbol">B</span>
+          consonant combination suitable for beginning a word
+        </li>
+        <li><span class="symbol">C</span>
+          consonant combination suitable anywhere in a word
+        </li>
+        <li><span class="symbol">i</span>
+          insult
+        </li>
+        <li><span class="symbol">m</span>
+          mushy name
+        </li>
+        <li><span class="symbol">M</span>
+          mushy name ending
+        </li>
+        <li><span class="symbol">D</span>
+          consonant suited for a stupid person's name
+        </li>
+        <li><span class="symbol">d</span>
+          syllable suited for a stupid person's name (begins with a vowel)
+        </li>
+      </ul>
+      <h2>Syntax</h2>
+      <ul>
+        <li><span class="syntax">&lt;&gt;</span>
+          Symbols between angular brackets generate fragments (above).
+        </li>
+        <li><span class="syntax">()</span>
+          Content between parenthesis appears literally.
+        </li>
+        <li><span class="syntax">|</span>
+          Generator will select either the left or the right of the bar.
+        </li>
+        <li><span class="syntax">!</span>
+          Capitalize the following component.
+        </li>
+        <li><span class="syntax">~</span>
+          Reverse the following component.
+        </li>
+      </ul>
+    </div>
+
+    <ul id="output"></ul>
+  </body>
+</html>

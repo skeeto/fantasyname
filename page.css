@@ -1,0 +1,106 @@
+body {
+    font-family: sans-serif;
+    width: 600px;
+    text-align: center;
+    margin: 0 auto;
+    box-sizing: border-box;
+    background-color: #eef;
+    overflow-y: scroll;
+}
+
+h1 {
+    font-size: 24px;
+    margin-bottom: 5px;
+}
+
+#spec {
+    display: inline-block;
+    text-align: center;
+    width: 600px;
+    border: 1px solid black;
+    font-size: 20px;
+    padding: 5px;
+    border-radius: 5px;
+    margin: 0px auto;
+    vertical-align: text-top;
+}
+
+.option {
+    display: block;
+    white-space: nowrap;
+}
+
+.option input {
+    padding: 0px;
+    margin: 0px;
+    margin-right: 0px;
+}
+
+#output {
+    width: 600px;
+    padding: 0px;
+    margin: 5px auto 0px auto;
+}
+
+#output li {
+    display: inline-block;
+    overflow: hidden;
+    font-size: 14px;
+    height: 16px;
+    padding: 0 15px;
+    margin: 1px 0;
+}
+
+input.invalid {
+    box-shadow: 0px 0px 3px 3px pink;
+}
+
+#count {
+    font-size: 10px;
+    color: gray;
+    width: 400px;
+    margin: 2px auto;
+    height: 12px;
+}
+
+#reference {
+    display: none;
+    text-align: left;
+    font-size: 11px;
+    border: 1px solid gray;
+    border-radius: 10px;
+    padding: 10px;
+    width: 400px;
+    white-space: nowrap;
+    overflow: hidden;
+    background-color: white;
+    margin: 5px auto;
+}
+
+#reference ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+}
+
+#reference h2 {
+    margin: 7px 0 5px 15px;
+}
+
+.symbol, .syntax {
+    display: inline-block;
+    width: 20px;
+    font-weight: bold;
+    text-align: center;
+}
+
+#instructions {
+    margin: -2px auto;
+    text-align: left;
+    float: left;
+}
+
+#instructions a {
+    text-decoration: none;
+    font-size: 11px;
+}
