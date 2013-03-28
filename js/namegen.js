@@ -198,6 +198,14 @@ NameGen._capitalize = function(string) {
 };
 
 /**
+ * @param {string} string
+ * @returns {string}
+ */
+NameGen._reverse = function(string) {
+    return string.split(/(?:)/).reverse().join('');
+};
+
+/**
  * When emitting, selects a random generator.
  * @param {Array} generators - An array of name generators
  * @returns A name generator, not necessarily a new one
@@ -363,53 +371,45 @@ NameGen.Sequence.prototype.enumerate = function() {
     return enumerate(enums, '');
 };
 
-/**
- * Decorate a generator by capitalizing its output.
- * @param generator - The generator to be decorated.
- * @returns A new generator.
- * @constructor
- */
-NameGen.Capitalizer = function(generator) {
-    if (!(this instanceof NameGen.Capitalizer)) {
-        return new NameGen.Capitalizer(generator);
+NameGen.fromTransform = function(f) {
+    function G(generator) {
+        if (!(this instanceof G)) {
+            return new G(generator);
+        }
+        this.generator = generator;
+        return this;
     }
-    /** @method */
-    this.toString = function() {
-        return NameGen._capitalize(generator.toString());
+
+    G.prototype.toString = function() {
+        return f(this.generator.toString());
     };
-    this.combinations = generator.combinations.bind(generator);
-    this.min = generator.min.bind(generator);
-    this.max = generator.max.bind(generator);
-    this.enumerate = function() {
-        return generator.enumerate().map(NameGen._capitalize);
+    G.prototype.combinations = function() {
+        return this.generator.combinations();
     };
-    return this;
+    G.prototype.min = function() {
+        return this.generator.min();
+    };
+    G.prototype.max = function() {
+        return this.generator.max();
+    };
+    G.prototype.enumerate = function() {
+        return this.generator.enumerate().map(f);
+    };
+
+    return G;
 };
 
 /**
- * Decorate a generator by reversing its output.
- * @param generator - The generator to be decorated.
- * @returns A new generator.
+ * Decorate a generator by capitalizing its output.
  * @constructor
  */
-NameGen.Reverser = function(generator) {
-    if (!(this instanceof NameGen.Reverser)) {
-        return new NameGen.Reverser(generator);
-    }
-    /** @method */
-    this.toString = function() {
-        return generator.toString().split('').reverse().join('');
-    };
-    this.combinations = generator.combinations.bind(generator);
-    this.min = generator.min.bind(generator);
-    this.max = generator.max.bind(generator);
-    this.enumerate = function() {
-        return generator.enumerate().map(function(s) {
-            return s.split('').reverse().join('');
-        });
-    };
-    return this;
-};
+NameGen.Capitalizer = NameGen.fromTransform(NameGen._capitalize);
+
+/**
+ * Decorate a generator by reversing its output.
+ * @constructor
+ */
+NameGen.Reverser = NameGen.fromTransform(NameGen._reverse);
 
 /* Everything below here is the compiler. */
 
