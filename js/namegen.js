@@ -246,7 +246,7 @@ NameGen.Random.prototype.toString = function() {
  * @method
  */
 NameGen.Random.prototype.combinations = function() {
-    return Math.max(1, this.sub.reduce(function (total, g) {
+    return Math.max(1, this.sub.reduce(function(total, g) {
         return total + g.combinations();
     }, 0));
 };
@@ -320,7 +320,7 @@ NameGen.Sequence.prototype.toString = function() {
  * @method
  */
 NameGen.Sequence.prototype.combinations = function() {
-    return this.sub.reduce(function (total, g) {
+    return this.sub.reduce(function(total, g) {
         return total * g.combinations();
     }, 1);
 };
