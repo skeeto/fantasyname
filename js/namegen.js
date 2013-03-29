@@ -211,7 +211,7 @@ NameGen._reverse = function(string) {
  * @returns A name generator, not necessarily a new one
  * @constructor
  */
-NameGen.Random = function(generators) {
+NameGen.Random = function Random(generators) {
     if (!(this instanceof NameGen.Random)) {
         switch (generators.length) {
         case 0:
@@ -289,7 +289,7 @@ NameGen.Random.prototype.enumerate = function() {
  * @returns A name generator, not necessarily a new one
  * @constructor
  */
-NameGen.Sequence = function(generators) {
+NameGen.Sequence = function Sequence(generators) {
     generators = NameGen._compress(generators);
     if (!(this instanceof NameGen.Sequence)) {
         switch (generators.length) {
