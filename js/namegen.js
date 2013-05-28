@@ -1,6 +1,6 @@
 /**
  * @file A fantasy name generator library.
- * @version 1.0
+ * @version 1.0.0
  * @license Public Domain
  *
  * This library is designed after the RinkWorks Fantasy Name Generator.
