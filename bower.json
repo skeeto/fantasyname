@@ -1,10 +1,10 @@
 {
-  "name": "fantasyname",
-  "version": "1.0.0",
-  "main": "js/namegen.js",
-  "ignore": [
-    "**/.*",
-    "node_modules",
-    "components"
-  ]
+    "name": "fantasyname",
+    "version": "1.0.0",
+    "main": "js/namegen.js",
+    "ignore": [
+        "*/"
+    ]
+    "description": "Fantasy name generator library.",
+    "license": "Public Domain"
 }
