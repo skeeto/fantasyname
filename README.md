@@ -15,6 +15,17 @@ generator.toString();  // => "entheu'loaf"
 generator.toString();  // => "honi'munch"
 ```
 
+## C++
+
+The C++ version also uses a template-compiler (based on the one for JavaScript)
+to create an efficient generator object. It requires C++11.
+
+```c++
+NameGen::Generator generator("sV'i");
+generator.toString();  // => "drai'sneeze"
+generator.toString();  // => "ardou'bumble"
+```
+
 ## Emacs Lisp
 
 The Emacs Lisp version doesn't include a parser. It operates on
