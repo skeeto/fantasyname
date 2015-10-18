@@ -1,8 +1,9 @@
 # Fantasy Name Generator
 
-Three implementations -- JavaScript, Elisp, and Perl -- of the
+Four implementations -- JavaScript, C++, Elisp, and Perl -- of the
 [name generator described at RinkWorks](http://rinkworks.com/namegen/).
-The JavaScript implementation is by far the most mature.
+The JavaScript and C++ implementations are by far the most mature.
+
 
 ## JavaScript
 
