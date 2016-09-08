@@ -1,7 +1,7 @@
 /**
  *
  * @file A fantasy name generator library.
- * @version 1.0.0
+ * @version 1.0.1
  * @license Public Domain
  * @author German M. Bravo (Kronuz)
  *
@@ -66,6 +66,8 @@
  *   New pattern symbols added to Generator.symbols will automatically
  * be used by the compiler.
  */
+
+#pragma once
 
 #include <string>
 #include <stack>
@@ -181,7 +183,7 @@ protected:
 	std::vector<std::unique_ptr<Generator>> generators;
 
 public:
-	static const std::unordered_map<std::string, const std::vector<std::string> > symbols;
+	static const std::unordered_map<std::string, const std::vector<std::string>>& SymbolMap();
 
 	Generator();
 	Generator(const std::string& pattern, bool collapse_triples=true);
