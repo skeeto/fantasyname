@@ -12,6 +12,7 @@
 #include <algorithm>  // for move, reverse
 #include <cwchar>     // for size_t, mbsrtowcs, wcsrtombs
 #include <cwctype>    // for towupper
+#include <memory>     // for make_unique
 #include <random>     // for mt19937, random_device, uniform_real_distribution
 #include <stdexcept>  // for invalid_argument, out_of_range
 
@@ -125,6 +126,9 @@ const std::unordered_map<std::string, const std::vector<std::string>>& Generator
 }
 
 
+#ifdef HAVE_CXX14
+using std::make_unique;
+#else
 // make_unique is not available in c++11, so we use this template function
 // to maintain full c++11 compatibility; std::make_unique is part of C++14.
 template<typename T, typename... Args>
@@ -132,6 +136,7 @@ std::unique_ptr<T> make_unique(Args&&... args)
 {
     return std::unique_ptr<T>(new T(std::forward<Args>(args)...));
 }
+#endif
 
 
 Generator::Generator()
