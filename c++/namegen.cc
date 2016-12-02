@@ -179,6 +179,7 @@ size_t Generator::max()
 	return final;
 }
 
+
 std::string Generator::toString() {
 	std::string str;
 	for (auto& g : generators) {
@@ -266,10 +267,12 @@ size_t Literal::combinations()
 {
 	return 1;
 }
+
 size_t Literal::min()
 {
 	return value.size();
 }
+
 size_t Literal::max()
 {
 	return value.size();
