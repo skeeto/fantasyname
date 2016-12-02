@@ -440,7 +440,7 @@ void Generator::Group::add(std::unique_ptr<Generator>&& g)
 
 void Generator::Group::add(char c)
 {
-	std::string value(&c, 1);
+	std::string value(1, c);
 	std::unique_ptr<Generator> g = make_unique<Random>();
 	g->add(make_unique<Literal>(value));
 	Group::add(std::move(g));
@@ -481,8 +481,8 @@ void Generator::GroupSymbol::add(char c)
 	std::string value(1, c);
 	std::unique_ptr<Generator> g = make_unique<Random>();
 	try {
-		static auto& symbols = SymbolMap();
-		for (auto s : symbols.at(value)) {
+		static const auto& symbols = SymbolMap();
+		for (const auto& s : symbols.at(value)) {
 			g->add(make_unique<Literal>(s));
 		}
 	} catch (const std::out_of_range&) {
