@@ -10,14 +10,14 @@
  *
  * @example
  * NameGen::Generator generator("sV'i");
- * generator.toString();  // Emits a new name on each call
+ * generator.toString();  // Returns a new name each call with transmit()
  * // => "entheu'loaf"
  *
  * ## Pattern Syntax
  *
  *   The compile() function creates a name generator based on an input
  * pattern. The letters s, v, V, c, B, C, i, m, M, D, and d represent
- * different types of random replacements. Everything else is emitted
+ * different types of random replacements. Everything else is transmitted
  * literally.
  *
  *   s - generic syllable
@@ -32,25 +32,25 @@
  *   D - consonant suited for a stupid person's name
  *   d - syllable suited for a stupid person's name (begins with a vowel)
  *
- *   All characters between parenthesis () are emitted literally. For
- * example, the pattern "s(dim)", emits a random generic syllable
+ *   All characters between parenthesis () are transmitted literally. For
+ * example, the pattern "s(dim)", transmits a random generic syllable
  * followed by "dim".
  *
- *   Characters between angle brackets <> emit patterns from the table
+ *   Characters between angle brackets <> transmit patterns from the table
  * above. Imagine the entire pattern is wrapped in one of these.
  *
  *   In both types of groupings, a vertical bar | denotes a random
- * choice. Empty groups are allowed. For example, "(foo|bar)" emits
- * either "foo" or "bar". The pattern "<c|v|>" emits a constant,
+ * choice. Empty groups are allowed. For example, "(foo|bar)" transmits
+ * either "foo" or "bar". The pattern "<c|v|>" transmits a constant,
  * vowel, or nothing at all.
  *
  *   An exclamation point ! means to capitalize the component that
- * follows it. For example, "!(foo)" will emit "Foo" and "v!s" will
- * emit a lowercase vowel followed by a capitalized syllable, like
+ * follows it. For example, "!(foo)" will transmit "Foo" and "v!s" will
+ * transmit a lowercase vowel followed by a capitalized syllable, like
  * "eRod".
  *
  *   A tilde ~ means to reverse the letters of the component that
- * follows it. For example, "~(foo)" will emit "oof". To reverse an
+ * follows it. For example, "~(foo)" will transmit "oof". To reverse an
  * entire template, wrap it in brackets. For example, to reverse
  * "sV'i" as a whole use "~<sV'i>". The template "~sV'i" will only
  * reverse the initial syllable.
@@ -160,7 +160,7 @@ class Generator
 
 		Group(group_types_t type_);
 
-		std::unique_ptr<Generator> emit();
+                std::unique_ptr<Generator> transmit();
 		void split();
 		void wrap(wrappers_t type);
 		void add(std::unique_ptr<Generator>&& g);
