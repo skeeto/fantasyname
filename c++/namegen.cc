@@ -374,7 +374,7 @@ Generator::Generator(const std::string &pattern, bool collapse_triples) {
 				} else if (c == ')' && top->type != group_types::literal) {
 					throw std::invalid_argument("Unexpected ')' in pattern");
 				}
-                                last = top->transmit();
+                                last = top->produce();
 				top = std::move(stack.top());
 				stack.pop();
 				top->add(std::move(last));
@@ -406,7 +406,7 @@ Generator::Generator(const std::string &pattern, bool collapse_triples) {
 		throw std::invalid_argument("Missing closing bracket");
 	}
 
-        std::unique_ptr<Generator> g = top->transmit();
+        std::unique_ptr<Generator> g = top->produce();
 	if (collapse_triples) {
 		g = make_unique<Collapser>(std::move(g));
 	}
@@ -446,7 +446,7 @@ void Generator::Group::add(char c)
 	Group::add(std::move(g));
 }
 
-std::unique_ptr<Generator> Generator::Group::transmit()
+std::unique_ptr<Generator> Generator::Group::produce()
 {
 	switch (set.size()) {
 		case 0:
