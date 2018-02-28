@@ -1,18 +1,18 @@
-CC = g++
-CFLAGS = -g -Wall -Wextra -O2 -std=c++11
-
-TARGET = namegen
+.POSIX:
+.SUFFIXES: .cc
+CXX      = c++
+CXXFLAGS = -std=c++11 -Wall -Wextra -O3 -g3
 
 all: namegen
 
 namegen: namegen.o example.o
-	$(CC) $(CFLAGS) -o namegen namegen.o example.o
+	$(CXX) $(LDFLAGS) -o $@ namegen.o example.o $(LDLIBS)
 
 namegen.o: namegen.cc
-	$(CC) $(CFLAGS) -c namegen.cc
-
 example.o: example.cc
-	$(CC) $(CFLAGS) -c example.cc
 
 clean:
-	$(RM) namegen *.o
+	rm -rf namegen namegen.o example.o
+
+.cc.o:
+	$(CXX) -c $(CXXFLAGS) -o $@ $<
