@@ -31,7 +31,7 @@ main(int argc, char **argv)
     *seed ^= (unsigned long)seed; /* Stack gap entropy */
     for (i = 0; i < 1000; i++)
         namegen_rand32(seed);
-    p = malloc(1);
+    p = malloc(4UL * 1024 * 1024);
     *seed ^= (unsigned long)p;    /* Allocator entropy */
     free(p);
     for (i = 0; i < 1000; i++)
