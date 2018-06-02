@@ -1,3 +1,9 @@
+/* Fantasy name generator ANSI C header library
+ * This is free and unencumbered software released into the public domain.
+ *
+ * This library is based on the RinkWorks Fantasy Name Generator.
+ * http://www.rinkworks.com/namegen/
+ */
 #ifndef NAMEGEN_H
 #define NAMEGEN_H
 
