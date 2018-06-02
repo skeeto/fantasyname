@@ -27,6 +27,16 @@ generator.toString();  // => "drai'sneeze"
 generator.toString();  // => "ardou'bumble"
 ```
 
+## C
+
+The C version generates names directly from the template:
+
+```c
+char name[64];
+unsigned long seed = 0xb9584b61UL;
+namegen(name, sizeof(name), "sV'i", &seed);
+```
+
 ## Emacs Lisp
 
 The Emacs Lisp version doesn't include a parser. It operates on
