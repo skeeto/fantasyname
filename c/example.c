@@ -50,6 +50,7 @@ main(int argc, char **argv)
         *seed ^= hash32((ptrdiff_t)main);     /* ASLR entopy */
         *seed ^= hash32((ptrdiff_t)seed);     /* Stack gap entropy */
         *seed ^= hash32((ptrdiff_t)p);        /* Allocator entropy */
+        *seed ^= hash32((ptrdiff_t)malloc);   /* C library ASLR */
         free(p);
     }
 
