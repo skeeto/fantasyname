@@ -47,9 +47,9 @@ main(int argc, char **argv)
     } else {
         void *p = malloc(4UL * 1024 * 1024);
         *seed ^= hash32(time(0));             /* Current time */
-        *seed ^= hash32((unsigned long)main); /* ASLR entopy */
-        *seed ^= hash32((unsigned long)seed); /* Stack gap entropy */
-        *seed ^= hash32((unsigned long)p);    /* Allocator entropy */
+        *seed ^= hash32((ptrdiff_t)main);     /* ASLR entopy */
+        *seed ^= hash32((ptrdiff_t)seed);     /* Stack gap entropy */
+        *seed ^= hash32((ptrdiff_t)p);        /* Allocator entropy */
         free(p);
     }
 
