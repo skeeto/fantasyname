@@ -3,13 +3,16 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-static void
-mix(unsigned long *seed, unsigned long entropy)
+static unsigned long
+hash32(unsigned long a)
 {
-    int i;
-    *seed ^= entropy;
-    for (i = 0; i < 1000; i++)
-        namegen_rand32(seed);
+    a = a & 0xffffffffUL;
+    a = (a ^ 61UL) ^ (a >> 16);
+    a = (a + (a << 3)) & 0xffffffffUL;
+    a = a ^ (a >> 4);
+    a = (a * 0x27d4eb2dUL) & 0xffffffffUL;
+    a = a ^ (a >> 15);
+    return a;
 }
 
 int
@@ -43,10 +46,10 @@ main(int argc, char **argv)
         fclose(urandom);
     } else {
         void *p = malloc(4UL * 1024 * 1024);
-        mix(seed, time(0));             /* Current time */
-        mix(seed, (unsigned long)main); /* ASLR entopy */
-        mix(seed, (unsigned long)seed); /* Stack gap entropy */
-        mix(seed, (unsigned long)p);    /* Allocator entropy */
+        *seed ^= hash32(time(0));             /* Current time */
+        *seed ^= hash32((unsigned long)main); /* ASLR entopy */
+        *seed ^= hash32((unsigned long)seed); /* Stack gap entropy */
+        *seed ^= hash32((unsigned long)p);    /* Allocator entropy */
         free(p);
     }
 
