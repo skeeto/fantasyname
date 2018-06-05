@@ -1,8 +1,8 @@
-#include "namegen.h"
 #include <time.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include "namegen.h"
 
 static unsigned long
 hash32(unsigned long a)
@@ -122,9 +122,16 @@ tests(void)
 
     {
         memset(buf, 0x5a, sizeof(buf));
-        r = namegen(buf, 4, "(abcd)", rng);
-        TEST("truncation",
+        r = namegen(buf, 4, "(abcdefg)", rng);
+        TEST("truncation 1",
              r == NAMEGEN_TRUNCATED && !strcmp(buf, "abc") && buf[4] == 0x5a);
+    }
+
+    {
+        memset(buf, 0x5a, sizeof(buf));
+        r = namegen(buf, 2, "i", rng);
+        TEST("truncation 2",
+             r == NAMEGEN_TRUNCATED && buf[0] && !buf[1] && buf[2] == 0x5a);
     }
 
     {
@@ -160,7 +167,7 @@ main(int argc, char **argv)
     int i;
     int count = 1;
     FILE *urandom;
-    unsigned char buf[4];
+    unsigned char randbuf[4];
     unsigned long seed[] = {0x8af611acUL};
 
     /* Parse command line arguments */
@@ -178,12 +185,12 @@ main(int argc, char **argv)
 
     /* Shuffle up the seed a bit */
     urandom = fopen("/dev/urandom", "rb");
-    if (urandom && fread(buf, sizeof(buf), 1, urandom)) {
+    if (urandom && fread(randbuf, sizeof(randbuf), 1, urandom)) {
         unsigned long rnd =
-            (unsigned long)buf[0] <<  0 |
-            (unsigned long)buf[1] <<  8 |
-            (unsigned long)buf[2] << 16 |
-            (unsigned long)buf[3] << 24;
+            (unsigned long)randbuf[0] <<  0 |
+            (unsigned long)randbuf[1] <<  8 |
+            (unsigned long)randbuf[2] << 16 |
+            (unsigned long)randbuf[3] << 24;
         *seed ^= rnd;
         fclose(urandom);
     } else {

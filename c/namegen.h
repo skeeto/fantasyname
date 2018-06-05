@@ -9,29 +9,35 @@
 
 #include <stddef.h>
 
-/* Interface */
+#define NAMEGEN_MAX_DEPTH  32 /* Cannot exceed bits in a long */
 
+/* Return codes */
 #define NAMEGEN_SUCCESS    0
-#define NAMEGEN_TRUNCATED  1
-#define NAMEGEN_INVALID    2
+#define NAMEGEN_TRUNCATED  1  /* Output was truncated */
+#define NAMEGEN_INVALID    2  /* Pattern is invalid */
+#define NAMEGEN_TOO_DEEP   3  /* Pattern exceeds maximum nesting depth */
 
-/* Generate a name into DST of length LEN from PATTERN and using SEED.
+/* Generate a name into DEST of LEN bytes from PATTERN and using SEED.
  *
- * The lower 32 bits seed should be thoroughly initialized. The function
- * will return one of the above codes to report the result. Truncation
- * occurs when DST is too short, which also causes validation to bail
- * out early.
+ * The length must be non-zero. For best results, the lower 32 bits of
+ * the seed should be thoroughly initialized. A particular seed will
+ * produce the same results on all platforms.
+ *
+ * The return value is one of the above codes, indicating success or
+ * that something went wrong. Truncation occurs when DEST was too short.
+ * Pattern is validated even when the output has been truncated.
  */
 static int
-namegen(char *dst, size_t len, const char *pattern, unsigned long *seed);
+namegen(char *dest, size_t len, const char *pattern, unsigned long *seed);
 
 /* Implementation */
 
 /* Rather than compile the pattern into some internal representation,
- * the name is generated directly from the pattern using reservoir
- * sampling. Under alternation (|), an initial pass selects a random
- * subgroup token, and a second pass actually generates a name from that
- * token. This is applied recursively within each token.
+ * the name is generated directly from the pattern in a single pass
+ * using reservoir sampling. If an alternate option is selected, the
+ * output pointer is reset to "undo" the output for the previous group.
+ * This means the output buffer may be written beyond the final output
+ * length (but never beyond the buffer length).
  *
  * The substitution templates are stored in an efficient, packed form
  * that contains no pointers. This is to avoid cluttering up the
@@ -282,149 +288,154 @@ namegen_rand32(unsigned long *s)
     return (*s = x) & 0xffffffffUL;
 }
 
-struct namegen {
-    const char *pattern;
-    char *dst;
-    size_t len;
-    unsigned long *rng;
-};
-
-/* Return a random token from the current group.
- */
 static int
-namegen_randtok(struct namegen *ng, const char **beg, const char **end)
+namegen_cap(int c, int capitalize)
 {
-    int nest = 0;
-    unsigned long n = 0;
-    const char *cur_beg = ng->pattern;
-
-    *end = *beg = ng->pattern;
-    for (;;) {
-        int c = *ng->pattern;
-        if (nest) {
-            switch (c) {
-                case 0:
-                    return NAMEGEN_INVALID;
-                case '<':
-                case '(':
-                    nest++;
-                    break;
-                case '>':
-                case ')':
-                    nest--;
-                    break;
-            }
-        } else {
-            switch (c) {
-                case 0:
-                case '>':
-                case ')':
-                    if (!n++ || namegen_rand32(ng->rng) < 0xffffffffUL / n) {
-                        *beg = cur_beg;
-                        *end = ng->pattern;
-                    }
-                    return NAMEGEN_SUCCESS;
-                case '<':
-                case '(':
-                    nest++;
-                    break;
-                case '|':
-                    if (!n++ || namegen_rand32(ng->rng) < 0xffffffffUL / n) {
-                        *beg = cur_beg;
-                        *end = ng->pattern;
-                    }
-                    cur_beg = ng->pattern + 1;
-                    break;
-            }
-        }
-        ng->pattern++;
-    }
+    return capitalize && c >= 'a' && c <= 'z' ? c & ~0x20 : c;
 }
 
-static int
-namegen_recurse(struct namegen *ng, int literal)
+/* Copy a random substitution for template C into P, but only before E.
+ */
+static char *
+namegen_copy(char *p, char *e, int c, unsigned long *seed, int capitalize)
 {
-    int r;
-    int capitalize = 0;
-    const char *beg, *end;
-
-    /* Fetch a random token */
-    r = namegen_randtok(ng, &beg, &end);
-    if (r != NAMEGEN_SUCCESS)
-        return r;
-
-    /* Generate the selected token */
-    for (; ng->len && beg < end; beg++) {
-        int n;
-        int c = *beg;
-        char *init_dst = ng->dst;
-
-        /* Recurse into a subgroup */
-        if (c == '(' || c == '<') {
-            int e;
-            const char *save = ng->pattern;
-            ng->pattern = beg + 1;
-            r = namegen_recurse(ng, c == '(');
-            beg = ng->pattern;
-            e = *ng->pattern;
-            ng->pattern = save;
-            if (r != NAMEGEN_SUCCESS)
-                return r;
-            if (e != (c == '(' ? ')' : '>'))
-                return NAMEGEN_INVALID;
-
-        /* Capitalize the next thing */
-        } else if (c == '!') {
-            capitalize = 1;
-
-        /* Pass through a literal */
-        } else if (literal || (n = namegen_special(c)) == -1) {
-            *ng->dst++ = c;
-            ng->len--;
-
-        /* Draw from a pre-defined template */
-        } else {
-            const short *offsets;
-            int count = namegen_offsets(n, &offsets);
-            int select = namegen_rand32(ng->rng) % count;
-            const char *s = namegen_argz + offsets[select];
-            while (*s && ng->len) {
-                *ng->dst++ = *s++;
-                ng->len--;
-            }
-        }
-
-        /* Apply capitalization */
-        if (capitalize && init_dst != ng->dst) {
-            capitalize = 0;
-            if (*init_dst >= 'a' && *init_dst <= 'z')
-                *init_dst &= ~0x20;
-        }
-    }
-
-    /* Terminate and return */
-    if (!ng->len) {
-        ng->dst[-1] = 0;
-        return NAMEGEN_TRUNCATED;
+    int n = namegen_special(c);
+    if (n == -1) {
+        if (p != e)
+            *p++ = namegen_cap(c, capitalize);
     } else {
-        ng->dst[0] = 0;
-        return NAMEGEN_SUCCESS;
+        const short *offsets;
+        int count = namegen_offsets(n, &offsets);
+        int select = namegen_rand32(seed) % count;
+        const char *s = namegen_argz + offsets[select];
+        while (*s) {
+            int r = *s++;
+            if (p != e)
+                *p++ = namegen_cap(r, capitalize);
+            capitalize = 0;
+        }
     }
+    return p;
 }
 
 static int
 namegen(char *dst, size_t len, const char *pattern, unsigned long *seed)
 {
-    int r;
-    struct namegen ng;
-    ng.pattern = pattern;
-    ng.dst = dst;
-    ng.len = len;
-    ng.rng = seed;
-    r = namegen_recurse(&ng, 0);
-    if (*ng.pattern)
-        return NAMEGEN_INVALID; /* Did not end at the terminator */
-    return r;
+    int depth = 0;               /* Current nesting depth */
+    char *p = dst;               /* Current output pointer */
+    char *e = dst + len;         /* Maxiumum output pointer */
+    int capitalize = 0;          /* Capitalize next item */
+
+    /* Stacks */
+    char *reset[NAMEGEN_MAX_DEPTH];     /* Reset pointer (undo generate) */
+    unsigned long n[NAMEGEN_MAX_DEPTH]; /* Number of groups */
+    unsigned long silent = 0;    /* Actively generating? */
+    unsigned long literal = 0;   /* Current "mode" */
+    unsigned long capstack = 0;  /* Initial capitalization state */
+
+    n[0] = 1;
+    reset[0] = dst;
+    for (;;) {
+        unsigned long mask; /* Bit for current depth */
+        int c = *pattern++;
+        switch (c) {
+            case 0:
+                if (depth) {
+                    *dst = 0;
+                    return NAMEGEN_INVALID;
+                } else if (p == e) {
+                    p[-1] = 0;
+                    return NAMEGEN_TRUNCATED;
+                } else {
+                    *p = 0;
+                    return NAMEGEN_SUCCESS;
+                }
+
+            case '<':
+                if (++depth == NAMEGEN_MAX_DEPTH) {
+                    *dst = 0;
+                    return NAMEGEN_TOO_DEEP;
+                }
+                mask = 1UL << depth;
+                n[depth] = 1;
+                reset[depth] = p;
+                literal &= ~mask;
+                silent &= ~mask;
+                silent |= (silent << 1) & mask;
+                capstack &= ~mask;
+                capstack |= (unsigned long)capitalize << depth;
+                break;
+
+            case '(':
+                if (++depth == NAMEGEN_MAX_DEPTH) {
+                    *dst = 0;
+                    return NAMEGEN_TOO_DEEP;
+                }
+                mask = 1UL << depth;
+                n[depth] = 1;
+                reset[depth] = p;
+                literal |= mask;
+                silent &= ~mask;
+                silent |= (silent << 1) & mask;
+                capstack &= ~mask;
+                capstack |= (unsigned long)capitalize << depth;
+                break;
+
+            case '>':
+                if (depth == 0) {
+                    *dst = 0;
+                    return NAMEGEN_INVALID;
+                }
+                mask = 1UL << depth--;
+                if (literal & mask)
+                    return NAMEGEN_INVALID;
+                break;
+
+            case ')':
+                if (depth == 0) {
+                    *dst = 0;
+                    return NAMEGEN_INVALID;
+                }
+                mask = 1UL << depth--;
+                if (!(literal & mask))
+                    return NAMEGEN_INVALID;
+                break;
+
+            case '|':
+                mask = 1UL << depth;
+                /* Stay silent if parent group is silent */
+                if (!(silent & (mask >> 1))) {
+                    if (namegen_rand32(seed) < 0xffffffffUL / ++n[depth]) {
+                        /* Switch to this option */
+                        p = reset[depth];
+                        silent &= ~mask;
+                        capitalize = capstack & mask;
+                    } else {
+                        /* Skip this option */
+                        silent |= mask;
+                    }
+                }
+                break;
+
+            case '!':
+                capitalize = 1;
+                break;
+
+            default:
+                mask = 1UL << depth;
+                if (!(silent & mask)) {
+                    if (literal & mask) {
+                        /* Copy value literally */
+                        if (p != e)
+                            *p++ = namegen_cap(c, capitalize);
+                    } else {
+                        /* Copy a substitution */
+                        p = namegen_copy(p, e, c, seed, capitalize);
+                    }
+                }
+                capitalize = 0;
+        }
+    }
 }
 
 #endif
