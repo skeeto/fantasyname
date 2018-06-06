@@ -29,13 +29,15 @@ generator.toString();  // => "ardou'bumble"
 
 ## C
 
-The C version generates names directly from the template:
+The C version generates names directly from the template in a single pass:
 
 ```c
 char name[64];
 unsigned long seed = 0xb9584b61UL;
 namegen(name, sizeof(name), "sV'i", &seed);
 ```
+
+This is the fastest implementation.
 
 ## Emacs Lisp
 
@@ -55,3 +57,5 @@ The Perl version is exceptionally slow, due to a slow parser.
 ```perl
 generate("sV'i");  # => "echoi'bum"
 ```
+
+This is the slowest implementation.
