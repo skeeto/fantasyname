@@ -333,22 +333,10 @@ namegen(char *dst, unsigned long len, const char *pattern, unsigned long *seed)
 
     n[0] = 1;
     reset[0] = dst;
-    for (;;) {
+    for (; *pattern; pattern++) {
         unsigned long mask; /* Bit for current depth */
-        int c = *pattern++;
+        int c = *pattern;
         switch (c) {
-            case 0:
-                if (depth) {
-                    *dst = 0;
-                    return NAMEGEN_INVALID;
-                } else if (p == e) {
-                    p[-1] = 0;
-                    return NAMEGEN_TRUNCATED;
-                } else {
-                    *p = 0;
-                    return NAMEGEN_SUCCESS;
-                }
-
             case '<':
                 if (++depth == NAMEGEN_MAX_DEPTH) {
                     *dst = 0;
@@ -433,6 +421,17 @@ namegen(char *dst, unsigned long len, const char *pattern, unsigned long *seed)
                 }
                 capitalize = 0;
         }
+    }
+
+    if (depth) {
+        *dst = 0;
+        return NAMEGEN_INVALID;
+    } else if (p == e) {
+        p[-1] = 0;
+        return NAMEGEN_TRUNCATED;
+    } else {
+        *p = 0;
+        return NAMEGEN_SUCCESS;
     }
 }
 
