@@ -7,8 +7,6 @@
 #ifndef NAMEGEN_H
 #define NAMEGEN_H
 
-#include <stddef.h>
-
 #define NAMEGEN_MAX_DEPTH  32 /* Cannot exceed bits in a long */
 
 /* Return codes */
@@ -17,18 +15,18 @@
 #define NAMEGEN_INVALID    2  /* Pattern is invalid */
 #define NAMEGEN_TOO_DEEP   3  /* Pattern exceeds maximum nesting depth */
 
-/* Generate a name into DEST of LEN bytes from PATTERN and using SEED.
+/* Generate a name into DST of LEN bytes from PATTERN and using SEED.
  *
  * The length must be non-zero. For best results, the lower 32 bits of
  * the seed should be thoroughly initialized. A particular seed will
  * produce the same results on all platforms.
  *
  * The return value is one of the above codes, indicating success or
- * that something went wrong. Truncation occurs when DEST was too short.
+ * that something went wrong. Truncation occurs when DST was too short.
  * Pattern is validated even when the output has been truncated.
  */
 static int
-namegen(char *dest, size_t len, const char *pattern, unsigned long *seed);
+namegen(char *dst, unsigned long len, const char *pattern, unsigned long *seed);
 
 /* Implementation */
 
@@ -319,7 +317,7 @@ namegen_copy(char *p, char *e, int c, unsigned long *seed, int capitalize)
 }
 
 static int
-namegen(char *dst, size_t len, const char *pattern, unsigned long *seed)
+namegen(char *dst, unsigned long len, const char *pattern, unsigned long *seed)
 {
     int depth = 0;               /* Current nesting depth */
     char *p = dst;               /* Current output pointer */
