@@ -373,8 +373,10 @@ namegen(char *dst, unsigned long len, const char *pattern, unsigned long *seed)
                     return NAMEGEN_INVALID;
                 }
                 mask = 1UL << depth--;
-                if (literal & mask)
+                if (literal & mask) {
+                    *dst = 0;
                     return NAMEGEN_INVALID;
+                }
                 break;
 
             case ')':
@@ -383,8 +385,10 @@ namegen(char *dst, unsigned long len, const char *pattern, unsigned long *seed)
                     return NAMEGEN_INVALID;
                 }
                 mask = 1UL << depth--;
-                if (!(literal & mask))
+                if (!(literal & mask)) {
+                    *dst = 0;
                     return NAMEGEN_INVALID;
+                }
                 break;
 
             case '|':
