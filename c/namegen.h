@@ -367,7 +367,7 @@ namegen(char *dst, unsigned long len, const char *pattern, unsigned long *seed)
     n[0] = 1;
     reset[0] = dst;
     for (; *pattern; pattern++) {
-        unsigned long mask; /* Bit for current depth */
+        unsigned long bit; /* Bit for current depth */
         int c = *pattern;
         switch (c) {
             case '<':
@@ -375,13 +375,13 @@ namegen(char *dst, unsigned long len, const char *pattern, unsigned long *seed)
                     *dst = 0;
                     return NAMEGEN_TOO_DEEP;
                 }
-                mask = 1UL << depth;
+                bit = 1UL << depth;
                 n[depth] = 1;
                 reset[depth] = p;
-                literal &= ~mask;
-                silent &= ~mask;
-                silent |= (silent << 1) & mask;
-                capstack &= ~mask;
+                literal &= ~bit;
+                silent &= ~bit;
+                silent |= (silent << 1) & bit;
+                capstack &= ~bit;
                 capstack |= (unsigned long)capitalize << depth;
                 break;
 
@@ -390,13 +390,13 @@ namegen(char *dst, unsigned long len, const char *pattern, unsigned long *seed)
                     *dst = 0;
                     return NAMEGEN_TOO_DEEP;
                 }
-                mask = 1UL << depth;
+                bit = 1UL << depth;
                 n[depth] = 1;
                 reset[depth] = p;
-                literal |= mask;
-                silent &= ~mask;
-                silent |= (silent << 1) & mask;
-                capstack &= ~mask;
+                literal |= bit;
+                silent &= ~bit;
+                silent |= (silent << 1) & bit;
+                capstack &= ~bit;
                 capstack |= (unsigned long)capitalize << depth;
                 break;
 
@@ -405,8 +405,8 @@ namegen(char *dst, unsigned long len, const char *pattern, unsigned long *seed)
                     *dst = 0;
                     return NAMEGEN_INVALID;
                 }
-                mask = 1UL << depth--;
-                if (literal & mask) {
+                bit = 1UL << depth--;
+                if (literal & bit) {
                     *dst = 0;
                     return NAMEGEN_INVALID;
                 }
@@ -417,25 +417,25 @@ namegen(char *dst, unsigned long len, const char *pattern, unsigned long *seed)
                     *dst = 0;
                     return NAMEGEN_INVALID;
                 }
-                mask = 1UL << depth--;
-                if (!(literal & mask)) {
+                bit = 1UL << depth--;
+                if (!(literal & bit)) {
                     *dst = 0;
                     return NAMEGEN_INVALID;
                 }
                 break;
 
             case '|':
-                mask = 1UL << depth;
+                bit = 1UL << depth;
                 /* Stay silent if parent group is silent */
-                if (!(silent & (mask >> 1))) {
+                if (!(silent & (bit >> 1))) {
                     if (namegen_rand32(seed) < 0xffffffffUL / ++n[depth]) {
                         /* Switch to this option */
                         p = reset[depth];
-                        silent &= ~mask;
-                        capitalize = capstack & mask;
+                        silent &= ~bit;
+                        capitalize = capstack & bit;
                     } else {
                         /* Skip this option */
-                        silent |= mask;
+                        silent |= bit;
                     }
                 }
                 break;
@@ -445,9 +445,9 @@ namegen(char *dst, unsigned long len, const char *pattern, unsigned long *seed)
                 break;
 
             default:
-                mask = 1UL << depth;
-                if (!(silent & mask)) {
-                    if (literal & mask) {
+                bit = 1UL << depth;
+                if (!(silent & bit)) {
+                    if (literal & bit) {
                         /* Copy value literally */
                         if (p != e)
                             *p++ = namegen_cap(c, capitalize);
