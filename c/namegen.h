@@ -432,7 +432,7 @@ namegen(char *dst, unsigned long len, const char *pattern, unsigned long *seed)
                         /* Switch to this option */
                         p = reset[depth];
                         silent &= ~bit;
-                        capitalize = capstack & bit;
+                        capitalize = !!(capstack & bit);
                     } else {
                         /* Skip this option */
                         silent |= bit;
