@@ -31,7 +31,9 @@ function update(event) {
     if (event) event.preventDefault();
     clear();
     try {
-        generator = NameGen.compile($('#spec').val());
+        var spec = $('#spec').val();
+        generator = NameGen.compile(spec);
+        location.replace('#' + encodeURI(spec));
         $('#spec').removeClass('invalid');
         if (generator.max() === 0) {
             generator = null;
@@ -58,4 +60,8 @@ $(document).ready(function() {
         event.preventDefault();
         $('#reference').slideToggle();
     });
+    if (location.hash) {
+        $('#spec').val(decodeURI(location.hash.substring(1)));
+        update();
+    }
 });
