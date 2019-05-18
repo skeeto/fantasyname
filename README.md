@@ -1,8 +1,8 @@
 # Fantasy Name Generator
 
-Four implementations -- JavaScript, C++, Elisp, and Perl -- of the
+Five implementations -- JavaScript, Typescript, C++, Elisp, and Perl -- of the
 [name generator described at RinkWorks](http://rinkworks.com/namegen/).
-The JavaScript and C++ implementations are by far the most mature.
+The Typescript and C++ implementations are by far the most mature.
 
 
 ## JavaScript
@@ -12,6 +12,17 @@ an efficient generator object.
 
 ```javascript
 var generator = NameGen.compile("sV'i");
+generator.toString();  // => "entheu'loaf"
+generator.toString();  // => "honi'munch"
+```
+
+## Typescript
+
+The Typescript version is based on the C++ version.
+
+```typescript
+import NameGen from "./utils/namegen";
+let generator = new NameGen.Generator("sV'i");
 generator.toString();  // => "entheu'loaf"
 generator.toString();  // => "honi'munch"
 ```
