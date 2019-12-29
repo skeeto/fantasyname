@@ -159,6 +159,7 @@ class Generator
 		group_types_t type;
 
 		Group(group_types_t type_);
+		virtual ~Group() { }
 
                 std::unique_ptr<Generator> produce();
 		void split();
