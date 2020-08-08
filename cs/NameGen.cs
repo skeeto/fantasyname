@@ -126,8 +126,9 @@ namespace NameGen
         public Generator(string pattern, bool collapseTriples = true, bool capitalizeFirst = true)
         {
             Generator last;
-            Stack<Group> stack = new Stack<Group>();
-            Group top = new GroupSymbol();
+            var stack = new Stack<Group>();
+            var random = new System.Random();
+            Group top = new GroupSymbol(random);
 
             for (var i = 0; i < pattern.Length; i++)
             {
@@ -136,11 +137,11 @@ namespace NameGen
                 {
                     case '<':
                         stack.Push(top);
-                        top = new GroupSymbol();
+                        top = new GroupSymbol(random);
                         break;
                     case '(':
                         stack.Push(top);
-                        top = new GroupLiteral();
+                        top = new GroupLiteral(random);
                         break;
                     case '>':
                     case ')':
@@ -182,7 +183,7 @@ namespace NameGen
             Generator g = top.Produce();
             if (collapseTriples)
                 g = new Collapser(g);
-			if (capitalizeFirst)
+            if (capitalizeFirst)
                 g = new Capitalizer(g);
             this.Add(g);
         }
@@ -248,10 +249,12 @@ namespace NameGen
         private List<Generator> set = new List<Generator>();
 
         public GroupTypes type;
+        protected System.Random random;
 
-        public Group(GroupTypes type)
+        public Group(GroupTypes type, System.Random random)
         {
             this.type = type;
+            this.random = random;
         }
 
         public Generator Produce()
@@ -263,7 +266,7 @@ namespace NameGen
                 case 1:
                     return this.set[0];
                 default:
-                    return new Random(this.set);
+                    return new Random(this.set, random);
             }
         }
 
@@ -301,7 +304,7 @@ namespace NameGen
 
         public virtual void Add(char chr)
         {
-            var g = new Random(new List<Generator>());
+            var g = new Random(new List<Generator>(), random);
             g.Add(new Literal(chr.ToString()));
             this.Add(g);
         }
@@ -360,11 +363,11 @@ namespace NameGen
                 "un", "unb", "ung", "unk", "unph", "unt", "uzz" } }
         };
 
-        public GroupSymbol() : base(GroupTypes.symbol) { }
+        public GroupSymbol(System.Random random) : base(GroupTypes.symbol, random) { }
 
         public override void Add(char a)
         {
-            var g = new Random(new List<Generator>());
+            var g = new Random(new List<Generator>(), random);
             if (symbolMap.ContainsKey(a))
             {
                 var symbols = symbolMap[a];
@@ -381,14 +384,17 @@ namespace NameGen
 
     internal class GroupLiteral : Group
     {
-        public GroupLiteral() : base(GroupTypes.literal) { }
+        public GroupLiteral(System.Random random) : base(GroupTypes.literal, random) { }
     }
 
     internal class Random : Generator
     {
-        private System.Random random = new System.Random();
+        private System.Random random;
 
-        public Random(List<Generator> generators) : base(generators) { }
+        public Random(List<Generator> generators, System.Random random) : base(generators)
+        {
+            this.random = random;
+        }
 
         internal override int Combinations()
         {
