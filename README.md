@@ -63,10 +63,19 @@ s-expressions.
 
 ## Perl
 
-The Perl version is exceptionally slow, due to a slow parser.
+The Perl version has both a parser and a generator. It's possible to parse an
+expression once with `parse` and then use the parsed abstract syntax tree for
+multiple generations with `generate`. In any case, `generate` also accepts a
+string as input, in which case parsing will happen behind the scenes.
+
 
 ```perl
 generate("sV'i");  # => "echoi'bum"
+
+# for "bulk" operations there's no need to re-parse the expression each time
+my $ast = FantasyName::parse("sV'i");
+print generate($ast) for 1 .. 10000;
 ```
 
-This is the slowest implementation.
+The parser is not fast due to a different implementation, so there should not be
+timeout issues any more.
