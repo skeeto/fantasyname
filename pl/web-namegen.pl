@@ -1,4 +1,5 @@
 #!/usr/bin/perl
+# vim: et ai sw=4 ts=4 sts=4 :
 
 use warnings;
 use strict;
@@ -6,7 +7,7 @@ use strict;
 use CGI qw/:standard/;
 use List::Util qw/min max/;
 use File::Basename;
-use FantasyName;
+use FantasyName qw/generate parse/;
 
 # Options
 my $counts   = [1, 5, 10, 25];
@@ -25,7 +26,7 @@ print header,
     "Pattern ", textfield(-name => 'pattern', -size => 60), p,
     "Count: ",
     popup_menu(-name    => 'count',
-	       -values  => $counts,
+           -values  => $counts,
                -default => $default_count), p,
     submit('Generate'),
     end_form,
@@ -38,53 +39,21 @@ if (param()) {
     $count = min($count, max(@$counts));
 
     # Test the pattern
-    my $test = gen($pattern);
+    if (my $ast = eval { parse($pattern) }) {
+        my @list = map { generate($ast) } (1 .. $count);
+        print ul(li(\@list));
 
-    if (!$test) {
-	print "Invalid pattern: ", escapeHTML($pattern), p;
-	my $patterns_log;
-	length($pattern) < $log_lenmax and
-	    open $patterns_log, ">>invalid.log" and
-	    print $patterns_log $pattern, "\n";
-    } elsif ($test eq -1) {
- 	print
- 	    "Generation timeout: please enter a simpler pattern.", p,
- 	    "If you want to generate this pattern, you can run ",
- 	    "it on your own machine. You can clone the name generator ",
-	    "project with git,", p,
- 	    "<pre>git clone ", a({-href => $git_url}, $git_repo), "</pre>";
-	my $patterns_log;
-	length($pattern) < $log_lenmax and
-	    open $patterns_log, ">>timeout.log"
-	    and print $patterns_log $pattern, "\n";
+        my $patterns_log;
+        open $patterns_log, ">>patterns.log"
+            and print $patterns_log $pattern, "\n";
     } else {
-	my @list;
-	push @list, gen($pattern) for (1..$count);
-	@list = grep {$_ ne -1} @list;
-	print ul(li(\@list));
+        print "Invalid pattern: ", escapeHTML($pattern), p;
 
-	my $patterns_log;
-	open $patterns_log, ">>patterns.log"
-	    and print $patterns_log $pattern, "\n";
+        my $patterns_log;
+        length($pattern) < $log_lenmax and
+            open $patterns_log, ">>invalid.log" and
+            print $patterns_log $pattern, "\n";
     }
 }
 
 print end_html;
-
-# Generates a single name, but is careful not to spend more than
-# $timeout seconds doing it.
-sub gen {
-    my $name;
-    my $pattern = shift;
-    eval {
-	local $SIG{ALRM} = sub { die "timeout\n" };
-	alarm $timeout;
-	$name = generate($pattern);
-	alarm 0;
-    };
-    if ($@) {
-	die unless $@ eq "timeout\n";
-	return -1;
-    }
-    return $name;
-}
