@@ -70,3 +70,12 @@ generate("sV'i");  # => "echoi'bum"
 ```
 
 This is the slowest implementation.
+
+## Java
+
+The Java version is based on the Typescript version.
+
+```java
+NameGen generator = new NameGen("sV'i");
+generator.toString(); # => "echoi'bum"
+```
